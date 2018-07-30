@@ -1,0 +1,34 @@
+# Compiled scout
+scout/*.o
+scout/*.S
+scout/*.bin
+scout/*.elf
+scout/arc/*.o
+scout/arc/*.S
+scout/loaders/*.o
+scout/loaders/*.S
+scout/pic/*.o
+scout/pic/*.S
+
+# Compiled embedded scout
+embedded_scout/*.o
+embedded_scout/*.S
+embedded_scout/*.bin
+embedded_scout/*.elf
+
+# Compiled kernel scoutkernel_scout/driver/*.order
+kernel_scout/driver/*.symvers
+kernel_scout/driver/*.o
+kernel_scout/driver/*.ko
+kernel_scout/user_mode/*.o
+kernel_scout/user_mode/*.S
+kernel_scout/user_mode/*.bin
+kernel_scout/user_mode/*.elf
+
+# Compiled tests
+tests/exploit_me_32
+tests/exploit_me_64
+
+# Compiled python modules
+utils/*.pyc
+manager/*.pyc
