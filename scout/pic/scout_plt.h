@@ -9,7 +9,6 @@
 /**  Structs  **/
 /***************/
 
-#pragma pack(1)
 typedef struct __pic_got
 {
     /* LibC */

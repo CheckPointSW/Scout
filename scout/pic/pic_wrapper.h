@@ -15,7 +15,6 @@
 /**  Structs  **/
 /***************/
 
-#pragma pack(1)
 typedef struct __pic_full_got
 {
     pic_got_t       scout;
