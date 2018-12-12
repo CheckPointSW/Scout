@@ -18,6 +18,8 @@
 /**  Structs  **/
 /***************/
 
+#define PAD_TO_ALIGNMENT(_X_) ((_X_) + (sizeof(addr_t) - ((_X_) % sizeof(addr_t))) % sizeof(addr_t))
+
 typedef struct __pic_globals
 {
 #ifdef SCOUT_INSTRUCTIONS
@@ -26,8 +28,8 @@ typedef struct __pic_globals
     scout_instruction_t instructions[SCOUT_MAX_INSTRS];
 #ifndef SCOUT_DYNAMIC_BUFFERS
     /* TCP Server */
-    uint8_t             recvBuffer[SCOUT_HEADER_SIZE + SCOUT_TCP_MAX_MESSAGE];
-    uint8_t             sendBuffer[SCOUT_TCP_MAX_MESSAGE];
+    uint8_t             recvBuffer[PAD_TO_ALIGNMENT(SCOUT_HEADER_SIZE + SCOUT_TCP_MAX_MESSAGE)];
+    uint8_t             sendBuffer[PAD_TO_ALIGNMENT(SCOUT_TCP_MAX_MESSAGE)];
 #endif /* ! SCOUT_DYNAMIC_BUFFERS */
 #endif /* SCOUT_INSTRUCTIONS */
 } pic_vars_t;
