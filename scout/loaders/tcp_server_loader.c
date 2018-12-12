@@ -11,24 +11,24 @@ void scout_main()
     struct sockaddr_in clientAddr;
     socklen_t clientAddrSize = sizeof(clientAddr);
     sock_fd clientSock;
-	sock_fd serverSock;
-	int32_t status;
+    sock_fd serverSock;
+    int32_t status;
     uint32_t size;
     uint8_t * receiveBuffer;
 
 #ifdef SCOUT_RESTORE_FLOW
     clientAddrSize = 0;
     clientSock = 0;
-	serverSock = 0;
+    serverSock = 0;
     receiveBuffer = NULL;
 #endif /* SCOUT_RESTORE_FLOW */
 
-	/* Open the TCP server */
-	status = open_tcp_server(&serverSock, SCOUT_LOADER_PORT);
-	if (status != STATUS_OK)
-	{
-		goto free_resources;
-	}
+    /* Open the TCP server */
+    status = open_tcp_server(&serverSock, SCOUT_LOADER_PORT);
+    if (status != STATUS_OK)
+    {
+        goto free_resources;
+    }
 
     /* Accept the client */
     clientSock = accept(serverSock, (struct sockaddr *)&clientAddr, &clientAddrSize);
