@@ -301,7 +301,8 @@ def generateCompilationFlags(compile_flags, link_flags, logger) :
 
     # Robustness (bitness) flag
     if config_bitness == flag_32_bit :
-        basic_compile_flags += ['m32']
+        if config_arc != flag_arc_arm :
+            basic_compile_flags += ['m32']
         if config_arc == flag_arc_intel :
             basic_link_flags    += ['melf_i386']
 
