@@ -15,7 +15,6 @@ void *   memcpy(void * dst, const void * src, size_t size);
 void *   memset(void * dst, int value, size_t size);
 void *   malloc(size_t size);
 void     free(void * ptr);
-uint32_t sleep(uint32_t seconds);
 
 /***************************/
 /**  Socket Dependencies  **/
