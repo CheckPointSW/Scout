@@ -13,8 +13,8 @@ GOT_START_MARKER    = struct.pack(">L", 0x11222211)
 GOT_END_MARKER      = struct.pack(">L", 0x33444433)
 
 # Variables (sizes only) - assuming no padding
-scout_globals_32_size = 4 + 10 * 14
-scout_globals_64_size = 4 + 10 * 18
+scout_globals_32_size = 4 + 10 * 16
+scout_globals_64_size = 4 + 10 * 20
 
 ########################
 ##  Global Variables  ##

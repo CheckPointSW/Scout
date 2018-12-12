@@ -47,6 +47,7 @@ typedef int32_t (*instrHandler)(void * ctx, uint8_t * instruction, uint32_t leng
 typedef struct __scout_instruction
 {
     uint16_t        instrID;
+    uint16_t        padding;
     uint32_t        minLength;
     uint32_t        maxLength;
     instrHandler    handler;
