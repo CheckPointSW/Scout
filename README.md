@@ -64,3 +64,5 @@ Scout was developed and used in our following research projects:
 
 ### Contact
 Eyal Itkin (eyalit at checkpoint dot com)
+
+[@EyalItkin](https://twitter.com/EyalItkin)
