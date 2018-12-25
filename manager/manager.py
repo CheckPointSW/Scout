@@ -2,7 +2,7 @@
 
 from kernel_scout_api  import *
 from scout_network     import *
-from elementals        import Prompter
+from elementals        import Prompter, hexDump
 
 import logging
 import struct
@@ -25,8 +25,10 @@ def startManage(sock_fd, logger):
 
     logger.info('Sending the memory read instruction')
     data = sendInstr(sock_fd, instrMemRead((leaked_addr - 0x1000) & (2 ** 64 - 1 - (0x1000 - 1)), 256), logger)
-    logger.info("The leaked data is: %s" % (data))
-    logger.info("The leaked hex data is: %s" % (data.encode("hex")))
+    logger.info("The leaked data is:")
+    logger.addIndent()
+    logger.info(hexDump(data))
+    logger.removeIndent()
 
 ##
 # Prints the usage instructions (example)
