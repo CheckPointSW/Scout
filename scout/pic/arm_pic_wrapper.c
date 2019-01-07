@@ -8,7 +8,14 @@
  * and it mandates the order of the functions in this file.
  */
 
+/* Compilation on an intel ubuntu machine, with arm-gcc */
 #define ELF_START           (0x00008000)
+/* Compilation on a raspberry pi */
+//#define ELF_START           (0x00010074)
+
+#ifndef ELF_START
+    #error "\"ELF_START\" symbol is missing! Should be defined to the address of the \"_Start\ function in the ELF."
+#endif /* ELF_START */
 
 #ifdef SCOUT_ARM_THUMB
 #define STATIC_FUNC_ADDR    (ELF_START + 0xC)

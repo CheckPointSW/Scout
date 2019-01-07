@@ -67,6 +67,7 @@ Additional Flags:
 * SCOUT_INSTRUCTIONS - Scout is going to use the instructions api (using the tcp server for instance)
 * SCOUT_DYNAMIC_BUFFERS - Scout will dynamically malloc() buffers to be used by the tcp server. Otherwise static buffers will be used.
 * SCOUT_PROXY - Scout is going to act as a proxy (user scout passing instructions to a kernel driver for instance)
+* SCOUT_MMAP - Should scout's loaders use mmap() and mprotect() when loading (if defined) or should they simply use malloc (if undefined)
 
 Additional Flags - SCOUT_RESTORE_FLOW:
 --------------------------------------

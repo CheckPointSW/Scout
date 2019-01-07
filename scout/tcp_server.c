@@ -119,7 +119,7 @@ uint32_t full_net_send(sock_fd sock, uint8_t * buffer, uint32_t length)
 
 void write_output(void * c, uint8_t * buffer, uint32_t length)
 {
-	output_data_t * ctx = (output_data_t *)c;
+    output_data_t * ctx = (output_data_t *)c;
     uint32_t usedSize = length < ctx->size - ctx->offset ? length : ctx->size - ctx->offset;
 
     /* Append it to the send buffer */
@@ -129,7 +129,7 @@ void write_output(void * c, uint8_t * buffer, uint32_t length)
 
 void mark_status(void * c, int32_t status)
 {
-	output_data_t * ctx = (output_data_t *)c;
+    output_data_t * ctx = (output_data_t *)c;
     ctx->status = status;
 }
 
@@ -199,6 +199,7 @@ int32_t start_server_loop(sock_fd serverSock)
             {
                 continue;
             }
+
             /* Basic sanitation */
             if (header.length > SCOUT_TCP_MAX_MESSAGE)
             {

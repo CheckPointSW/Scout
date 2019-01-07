@@ -46,7 +46,11 @@ void scout_main()
     size = ntohl(size);
 
     /* Allocate the receive buffer */
+#ifdef SCOUT_MMAP
+    receiveBuffer = (uint8_t*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+#else /* !SCOUT_MMAP */
     receiveBuffer = (uint8_t*)malloc(size);
+#endif /* SCOUT_MMAP */
     if (receiveBuffer == NULL)
     {
         goto free_resources;
@@ -61,6 +65,10 @@ void scout_main()
     /* Flush the cache for this buffer */
     flush_cache(receiveBuffer, size);
 
+#ifdef SCOUT_MMAP
+    mprotect(receiveBuffer, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+#endif /* SCOUT_MMAP */
+
     /* Jump into the buffer */
     ((void (*)(void))receiveBuffer)();
 
@@ -69,7 +77,11 @@ free_resources:
     /* Free the buffer */
     if (receiveBuffer != NULL)
     {
+#ifdef SCOUT_MMAP
+        munmap(receiveBuffer, size)
+#else /* !SCOUT_MMAP  */
         free(receiveBuffer);
+#endif /* SCOUT_MMAP */
     }
 
     /* Close the sockets */

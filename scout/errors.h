@@ -14,7 +14,6 @@
 #define STATUS_TCP_RECV_FAILED        9
 #define STATUS_TCP_SEND_FAILED       10
 
-
 /* Scout API Statuses */
 #define STATUS_SMALL_HEADER          20
 #define STATUS_ILLEGAL_LENGTH        21

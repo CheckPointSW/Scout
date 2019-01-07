@@ -19,4 +19,4 @@ After a TCP connection was established, the loader will follow these steps:
 4. The loader will jump into the buffer's start (offset 0, as mentioned in the PIC tutorial)
 5. In the flow restore case, once the loaded executable finishes the loader will free the memory and close the used sockets.
 
-Note: In case there are any W^X style limitations in your environment, it is recommended to make sure that the allocated memory for the full debugger will have both Write and eXcutable permissions. In some scenarios this will mandate the use of a custom loader.
+Note: In case there are any W^X style limitations in your environment, it is recommended to make sure that the allocated memory for the full debugger will have both Write and eXcutable permissions (should probably use the SCOUT_MMAP flag in this case).
