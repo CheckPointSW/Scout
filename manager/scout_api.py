@@ -24,7 +24,7 @@ error_codes = {     # General errors
                     10 : "STATUS_TCP_SEND_FAILED",
 
                     # Scout API
-                    20 : "STATUS_SMALL_HEADER", 
+                    20 : "STATUS_SMALL_HEADER",
                     21 : "STATUS_ILLEGAL_LENGTH",
                     22 : "STATUS_ILLEGAL_INSTR_ID"
               }
@@ -64,7 +64,7 @@ def setBitness64():
 
 def addErrorCodes(errors):
     """Adds the given error codes to the supported dictionary
-    
+
     Args:
         errors (dict): new supported error codes in the form: <error ID> : <error string>
     """
@@ -79,11 +79,10 @@ def addErrorCodes(errors):
 
 def addHeader(opcode, raw_instr):
     """Adds the protocol's header to the given instruction
-    
+
     Args:
         opcode (numeric): instruction opcode ID
         raw_instr (string): binary data of the wanted instruction
-
     Return Value:
         string containing the complete serialized instruction
     """
@@ -92,10 +91,9 @@ def addHeader(opcode, raw_instr):
 # basic instructions
 def instrNop():
     """Builds the NOP (Pong) instruction
-    
+
     Args:
         (none)
-
     Return Value:
         string containing the serialized instruction
     """
@@ -103,11 +101,10 @@ def instrNop():
 
 def instrMemRead(addr, length):
     """Builds the Read (Virtual) Memory instruction
-    
+
     Args:
         addr (numeric): (virtual) memory address
         length (numeric): number of bytes to be read form the given address
-
     Return Value:
         string containing the serialized instruction
     """
@@ -116,11 +113,10 @@ def instrMemRead(addr, length):
 
 def instrMemWrite(addr, content):
     """Builds the Write (Virtual) Memory instruction
-    
+
     Args:
         addr (numeric): (virtual) memory address
         content (string): binary data to be written to the given address
-
     Return Value:
         string containing the serialized instruction
     """

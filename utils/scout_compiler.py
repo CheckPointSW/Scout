@@ -7,6 +7,11 @@ import struct
 ##  Default Configurations  ##
 ##############################
 
+# Native Compiler
+native_compiler_path = 'gcc'
+native_linker_path   = 'ld'
+native_objcopy_path  = 'objcopy'
+
 # Arm Compiler
 arm_compiler_path   = '/usr/bin/arm-none-eabi-gcc'
 arm_linker_path     = '/usr/bin/arm-none-eabi-ld'
@@ -51,16 +56,18 @@ flag_instructions   = 'SCOUT_INSTRUCTIONS'
 flag_restore_flow   = 'SCOUT_RESTORE_FLOW'
 flag_dynamic_buffers= 'SCOUT_DYNAMIC_BUFFERS'
 flag_proxy          = 'SCOUT_PROXY'
+flag_mmap           = 'SCOUT_MMAP'
 
 # Using an enum to support feature extensions
 ARC_INTEL = 'intel'
 ARC_ARM   = 'arm'
+
 arc_setups = {
-                ARC_INTEL:  (intel_compiler_path, intel_linker_path, intel_objcopy_path, intel_objcopy_flags), 
+                ARC_INTEL:  (intel_compiler_path, intel_linker_path, intel_objcopy_path, intel_objcopy_flags),
                 ARC_ARM:    (arm_compiler_path, arm_linker_path, arm_objcopy_path, arm_objcopy_flags),
              }
 arc_configs = {
-                ARC_INTEL:  flag_arc_intel, 
+                ARC_INTEL:  flag_arc_intel,
                 ARC_ARM:    flag_arc_arm,
               }
 
@@ -82,7 +89,7 @@ linker_path         = None
 objcopy_path        = None
 objcopy_flags       = None
 
-# Scout configurations flags 
+# Scout configurations flags
 config_bitness      = None
 config_endianness   = None
 config_arc          = None
@@ -96,32 +103,37 @@ project_folder      = None
 scout_folder        = None
 include_dirs        = None
 
-def setScoutArc(arc, is_32_bits, is_little_endian, logger) :
+def setScoutArc(arc, is_32_bits, is_little_endian, logger, is_native=False):
     """Sets the target's architecture specifications
-    
+
     Args:
         arc (string, enum): name of the target architecture (should be a key of arc_setups)
         is_32_bits (bool): True iff the architecture is 32 bit, otherwise it will be 64 bits
         is_little_endian (bool): True iff the architecture is little endian, otherwise it will be big endian
         logger (logger): (elementals) logger
+        is_native (bool, optional): True iff should use the native compilation programs, regardless of the arc (False by default)
     """
     global compiler_path, linker_path, objcopy_path, objcopy_flags, config_bitness, config_endianness, config_arc
 
     # Sanity check
-    if arc not in arc_setups.keys() :
+    if arc not in arc_setups.keys():
         logger.error("Unknown architecture: \"%s\". Supported options are: \"%s\"" % (arc, ', '.join(arc_setups.keys())))
 
     # Apply the chosen settings
     compiler_path, linker_path, objcopy_path, objcopy_flags = arc_setups[arc]
+    if is_native:
+        compiler_path = native_compiler_path
+        linker_path   = native_linker_path
+        objcopy_path  = native_objcopy_path
 
     # Store the values for the configuration flags
     config_bitness      = flag_32_bit           if is_32_bits       else flag_64_bit
     config_endianness   = flag_little_endian    if is_little_endian else flag_big_endian
     config_arc          = arc_configs[arc]
-    
-def setScoutEnv(is_pc) :
+
+def setScoutEnv(is_pc):
     """Sets the target's environment flags
-    
+
     Args:
         is_pc (bool): True iff the environment is a standard PC, otherwise it will be an embedded environment
     """
@@ -130,9 +142,9 @@ def setScoutEnv(is_pc) :
     config_env = flag_env_pc   if is_pc else flag_env_embedded
     config_pic = flag_pic_code if not is_pc else ''
 
-def setScoutMode(is_user) :
+def setScoutMode(is_user):
     """Sets the target's permission level
-    
+
     Args:
         is_user (bool): True iff the scout will run in user mode, otherwise it will assume kernel mode permissions
     """
@@ -140,19 +152,19 @@ def setScoutMode(is_user) :
 
     config_mode = flag_mode_user if is_user else flag_mode_kernel
 
-def setScoutFlags(flags) :
+def setScoutFlags(flags):
     """Adds additional flags regarding the target's specifications
-    
+
     Args:
         flags (list): list of configuration flags (strings)
     """
     global config_flags
-    
+
     config_flags += flags
 
-def setWorkingDirs(project_dir, scout_dir) :
+def setWorkingDirs(project_dir, scout_dir):
     """Sets the paths for the used directories
-    
+
     Args:
         project_dir (string): path to the project's directory
         scout_dir (string): path to the directory of the basic Scout
@@ -162,17 +174,17 @@ def setWorkingDirs(project_dir, scout_dir) :
     project_folder = project_dir
     scout_folder   = scout_dir
 
-    if scout_folder.endswith(os.path.sep + "scout") :
+    if scout_folder.endswith(os.path.sep + "scout"):
         main_folder = os.path.sep.join(scout_folder.split(os.path.sep)[:-1])
-    else :
+    else:
         main_folder = scout_folder + os.path.sep + '..'
 
     # Can update the include directories
     include_dirs = [project_folder, main_folder]
 
-def addIncludeDirs(dirs) :
+def addIncludeDirs(dirs):
     """Adds additional include directories for the compilation
-    
+
     Args:
         dirs (list): list of additional include directories
     """
@@ -180,9 +192,9 @@ def addIncludeDirs(dirs) :
 
     include_dirs += dirs
 
-def verifyScoutFlags(logger) :
+def verifyScoutFlags(logger):
     """Checks that all of the configuration flags are set correctly
-    
+
     Args:
         logger (logger): (elementals) logger
 
@@ -191,50 +203,50 @@ def verifyScoutFlags(logger) :
     """
     global config_flags
 
-    if config_bitness is None :
+    if config_bitness is None:
         logger.error("Missing Scout flag: unknown bitness")
         return False
 
-    if config_endianness is None :
+    if config_endianness is None:
         logger.error("Missing Scout flag: unknown endianness")
         return False
 
-    if config_arc is None :
+    if config_arc is None:
         logger.error("Missing Scout flag: unknown architecture")
         return False
 
-    if config_env is None :
+    if config_env is None:
         logger.error("Missing Scout flag: unknown environment")
         return False
 
-    if config_mode is None :
+    if config_mode is None:
         logger.error("Missing Scout flag: unknown permission mode")
         return False
 
-    if config_pic is None :
+    if config_pic is None:
         logger.error("Missing Scout flag: should decide if compiling in PIC mode")
         return False
 
     # Reaching here means that all was OK
     additional_flags = [] + config_flags
     config_flags  = [config_bitness, config_endianness, config_arc, config_env, config_mode]
-    if len(config_pic) > 0 :
+    if len(config_pic) > 0:
         config_flags += [config_pic]
     config_flags += additional_flags
     return True
 
-def generateFlagsFile(logger) :
+def generateFlagsFile(logger):
     """Generates the architecture's "flags.h" file
-    
+
     Args:
         logger (logger): (elementals) logger
     """
     # Verify the flags
-    if not verifyScoutFlags(logger) :
+    if not verifyScoutFlags(logger):
         return
 
     # Verify we know where to store this file
-    if project_folder is None :
+    if project_folder is None:
         logger.error("Working directories are NOT defined...")
         return
 
@@ -248,7 +260,7 @@ def generateFlagsFile(logger) :
     # auto-generation comment
     fd.write("/* This file is AUTO-GENERATED, please do NOT edit it manually */\n")
     # The actual flags
-    for flag in set(config_flags) :
+    for flag in set(config_flags):
         fd.write("#define %s\n" % (flag))
     # file suffix
     fd.write('\n')
@@ -256,9 +268,9 @@ def generateFlagsFile(logger) :
     # can close the file
     fd.close()
 
-def generateCompilationFlags(compile_flags, link_flags, logger) :
+def generateCompilationFlags(compile_flags, link_flags, logger):
     """Generates the compilation flags that match the configurations flags
-    
+
     Args:
         copmile_flags (list): list of compiler flags (without the '-' prefix)
         link_flags (list) list of linker flags (without the '-' prefix)
@@ -271,44 +283,44 @@ def generateCompilationFlags(compile_flags, link_flags, logger) :
 
     orig_compile_flags  = [] + basic_compile_flags
     orig_link_flags     = [] + basic_link_flags
-    
+
     # Additional non-Intel flags
-    if config_arc != flag_arc_intel :
+    if config_arc != flag_arc_intel:
         # Endianness
-        if config_endianness == flag_little_endian :
+        if config_endianness == flag_little_endian:
             basic_compile_flags += ['mlittle-endian']
             basic_link_flags    += ['EL']
-        else :
+        else:
             basic_compile_flags += ['mbig-endian']
             basic_link_flags    += ['EB']
-        
+
         # Thumb
         basic_compile_flags     += ['mthumb'] if (flag_arc_thumb in config_flags) else []
 
     # PC Environment
-    if config_env == flag_env_pc :
+    if config_env == flag_env_pc:
         basic_compile_flags += basic_pc_compile_flags
 
     # Embedded Environment
-    else :
+    else:
         basic_compile_flags += basic_embedded_compile_flags
         # Intel Arc
-        if config_arc == flag_arc_intel :
+        if config_arc == flag_arc_intel:
             basic_compile_flags += intel_embedded_compile_flags
         # Arm Arc
-        else :
+        else:
             basic_compile_flags += arm_embedded_compile_flags
 
     # Robustness (bitness) flag
-    if config_bitness == flag_32_bit :
-        if config_arc != flag_arc_arm :
+    if config_bitness == flag_32_bit:
+        if config_arc != flag_arc_arm:
             basic_compile_flags += ['m32']
-        if config_arc == flag_arc_intel :
+        if config_arc == flag_arc_intel:
             basic_link_flags    += ['melf_i386']
 
     # Final Compile & Link flags
-    compile_flags = ' '.join(map(lambda x : '-' + x, (basic_compile_flags + compile_flags + map(lambda y : 'I' + y, include_dirs))))
-    link_flags    = ' '.join(map(lambda x : '-' + x, basic_link_flags + link_flags))
+    compile_flags = ' '.join(map(lambda x: '-' + x, (basic_compile_flags + compile_flags + map(lambda y: 'I' + y, include_dirs))))
+    link_flags    = ' '.join(map(lambda x: '-' + x, basic_link_flags + link_flags))
 
     # Restore the global flags
     basic_compile_flags  = [] + orig_compile_flags
@@ -316,9 +328,9 @@ def generateCompilationFlags(compile_flags, link_flags, logger) :
 
     return compile_flags, link_flags
 
-def systemLine(line, logger) :
+def systemLine(line, logger):
     """Issues and debug trace a systen line
-    
+
     Args:
         line (string): cmd line to be executed
         logger (logger): (elementals) logger
@@ -326,9 +338,9 @@ def systemLine(line, logger) :
     logger.debug(line)
     os.system(line)
 
-def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file, final_file, logger) :
+def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file, final_file, logger):
     """Compiles an embedded "Scout" project
-    
+
     Args:
         compilation_files (list): list of file paths for all code (*.c) files
         compile_flags (string): compilation flags to be passed to the compiler
@@ -340,7 +352,7 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     logger.addIndent()
 
     # 0. Sanity check
-    if config_env != flag_env_embedded :
+    if config_env != flag_env_embedded:
         logger.error("Compiling an Embedded scout with PC environment flag. Did you mean: compilePCScout() ?")
         logger.removeIndent()
         return
@@ -351,14 +363,14 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     # 2. Generate all of the *.S files
     logger.info("Compiling the *.c files")
     s_files = []
-    for c_file in compilation_files :
+    for c_file in compilation_files:
         local_out_file = '.'.join(c_file.split('.')[:-1]) + '.S'
         systemLine("%s -S -c %s %s -o %s" % (compiler_path, compile_flags, c_file, local_out_file), logger)
         s_files.append(local_out_file)
 
     # 3. Work-around GCC's bugs
     logger.info("Fixing the *.S files to work around GCC's bugs")
-    for s_file in s_files :
+    for s_file in s_files:
         fd = open(s_file, 'r')
         content = fd.read()
         fd.close()
@@ -370,24 +382,24 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     # 4. Generate all of the *.o files
     logger.info("Compiling the *.S files")
     o_files = []
-    for s_file in s_files :
+    for s_file in s_files:
         local_out_file = '.'.join(s_file.split('.')[:-1]) + '.o'
         systemLine("%s -c %s %s -o %s" % (compiler_path, compile_flags, s_file, local_out_file), logger)
         o_files.append(local_out_file)
 
     # 5. Link together all of the *.o files
-    logger.info("Linking together all of the files, creating: %s" % (elf_file))
+    logger.info("Linking together all of the files, creating: %s", elf_file)
     systemLine("%s %s %s -o %s" % (linker_path, link_flags, ' '.join(o_files), elf_file), logger)
 
     # 6. Objcopy the content to the actual wanted file
-    logger.info("Extracting the final binary to: %s" % (final_file))
+    logger.info("Extracting the final binary to: %s", final_file)
     systemLine("%s -O binary -j .text -j .rodata %s %s %s" % (objcopy_path, ' '.join(objcopy_flags), elf_file, final_file), logger)
 
     logger.removeIndent()
 
-def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logger) :
+def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logger):
     """Compiles a regular (PC) "Scout" project
-    
+
     Args:
         compilation_files (list): list of file paths for all code (*.c) files
         compile_flags (string): compilation flags to be passed to the compiler
@@ -396,7 +408,7 @@ def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logge
         logger (logger): (elementals) logger
     """
     # 0. Sanity check
-    if config_env != flag_env_pc :
+    if config_env != flag_env_pc:
         logger.error("Compiling a PC scout with EMBEDDED environment flag. Did you mean: compileEmbeddedScout() ?")
         return
 
@@ -405,9 +417,9 @@ def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logge
 
     # 2. Re-organize the linker flags
     raw_link_flags = link_flags.split("-")
-    if len(link_flags) != 0 :
+    if len(link_flags) != 0:
         raw_link_flags = map(lambda x : "-Wl,%s" % (x), raw_link_flags)
 
     # 3. Compile together all of the file (and that's it)
-    logger.info("Compiling the *.c files, linking them together and creating: %s" % (elf_file))
+    logger.info("Compiling the *.c files, linking them together and creating: %s", elf_file)
     systemLine("%s %s %s %s -o %s" % (compiler_path, compile_flags, " ".join(compilation_files), " ".join(raw_link_flags), elf_file), logger)

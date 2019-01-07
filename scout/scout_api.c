@@ -145,7 +145,7 @@ int32_t instruction_mem_read(void * ctx, uint8_t * instruction, uint32_t length)
 
     src    = unpack_addr(   &readHead );
     length = unpack_uint32( &readHead );
-    
+
     write_output(ctx, (uint8_t *)src, length);
     return STATUS_OK;
 }
@@ -162,7 +162,7 @@ int32_t instruction_mem_write(void * ctx, uint8_t * instruction, uint32_t length
 
     /* Preform the write */
     memcpy((void *)dst, (void *)readHead, length);
-    
+
     return STATUS_OK;
 }
 

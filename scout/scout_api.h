@@ -12,22 +12,22 @@
 
 /**
  * Appends the given data to the output (data) stream
- * 
+ *
  * @author eyalit (07/03/2018)
- *  
- * @param ctx - general context 
+ *
+ * @param ctx - general context
  * @param buffer - data to be appended to the output
  * @param length - number of bytes in the data buffer
  */
 void write_output(void * ctx, uint8_t * buffer, uint32_t length);
 
 /**
- * Marks the success status of the command and writes it to the 
- * (control) stream 
- * 
+ * Marks the success status of the command and writes it to the
+ * (control) stream
+ *
  * @author eyalit (07/03/2018)
- *  
- * @param ctx - general context 
+ *
+ * @param ctx - general context
  * @param status - command success status
  */
 void mark_status(void * ctx, int32_t status);
@@ -67,26 +67,26 @@ typedef struct __scout_instruction
 
 /**
  * Parses the command's header from the raw buffer
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param buffer - raw command buffer
  * @param length - length in bytes of the raw command buffer
- * @param header - commadn header struct to be initialized 
- *  
+ * @param header - commadn header struct to be initialized
+ *
  * @return int32_t - success status
  */
 int32_t parse_header(uint8_t * buffer, uint32_t length, scout_header_t * header, bool validateLen);
 
 /**
  * Verifies and Handles the given instruction
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param ctx - general context
  * @param header - scout header as extracted from the buffer
  * @param buffer - instruction raw buffer
- * 
+ *
  * @return int32_t - success status
  */
 int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer);
@@ -94,13 +94,13 @@ int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer
 #ifdef SCOUT_PROXY
 /**
  * Passes the instruction to the real instruction handler
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param ctx - general context
  * @param header - scout header as extracted from the buffer
  * @param buffer - instruction raw buffer
- * 
+ *
  * @return int32_t - success status
  */
 int32_t proxy_handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer);
@@ -112,33 +112,33 @@ int32_t proxy_handle_instruction(void * ctx, scout_header_t * header, uint8_t * 
 
 /**
  * Retrieves the number of registerred instructions
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @return uint16_t - number of registerred instruction
  */
 uint16_t get_instruction_count(void);
 
 /**
  * Retrieves the instruction at the given index
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param index - index of the wanted instruction
- * 
- * @return scout_instruction_t * - pointer to the wanted 
+ *
+ * @return scout_instruction_t * - pointer to the wanted
  *         instruction (NULL in case of error)
  */
 scout_instruction_t * get_instruction(uint16_t index);
 
 /**
- * Registers the given instructions. 
+ * Registers the given instructions.
  * Assumption:
  *  The operation will silently fail if the maximum number of
  *  instructions was already reached.
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param instrID - instruction ID
  * @param minLength - minimal instruction input length
  * @param maxLength - maximal instruction input length
@@ -148,7 +148,7 @@ void register_instruction(uint16_t instrID, uint32_t minLength, uint32_t maxLeng
 
 /**
  * Registers all of the basic instructions
- * 
+ *
  * @author eyalit (07/03/2018)
  */
 void register_basic_instructions(void);
@@ -157,14 +157,14 @@ void register_basic_instructions(void);
  * Registers the project specific instructions.
  * NOTE:
  * Should be implemented by the project
- * 
+ *
  * @author eyalit (06/05/2018)
  */
 void register_specific_instructions(void);
 
 /**
  * Registers all of the instructions
- * 
+ *
  * @author eyalit (06/05/2018)
  */
 void register_all_instructions(void);
@@ -181,41 +181,41 @@ void register_all_instructions(void);
 
 /**
  * The NOP instruction - does nothing, returns OK.
- * 
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param ctx - general context
  * @param instruction - raw instruction buffer
  * @param length - number of bytes in the instruction buffer
- * 
+ *
  * @return int32_t - success status
  */
 int32_t instruction_nop(void * ctx, uint8_t * instruction, uint32_t length);
 
 /**
- * Reads basic memory (usually virtual RAM memory) and writes it 
- * to the output. 
- * 
+ * Reads basic memory (usually virtual RAM memory) and writes it
+ * to the output.
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param ctx - general context
  * @param instruction - raw instruction buffer
  * @param length - number of bytes in the instruction buffer
- * 
+ *
  * @return int32_t - success status
  */
 int32_t instruction_mem_read(void * ctx, uint8_t * instruction, uint32_t length);
 
 /**
- * Basic memory update (usually virtual RAM memory) with given 
- * input. 
- * 
+ * Basic memory update (usually virtual RAM memory) with given
+ * input.
+ *
  * @author eyalit (07/03/2018)
- * 
+ *
  * @param ctx - general context
  * @param instruction - raw instruction buffer
  * @param length - number of bytes in the instruction buffer
- * 
+ *
  * @return int32_t - success status
  */
 int32_t instruction_mem_write(void * ctx, uint8_t * instruction, uint32_t length);
@@ -231,7 +231,7 @@ int32_t instruction_mem_write(void * ctx, uint8_t * instruction, uint32_t length
 
 #define INSTR_MEM_WRITE_MIN_SIZE (sizeof(addr_t))
 #define INSTR_MEM_WRITE_MAX_SIZE (sizeof(addr_t) + 256)
-#define INSTR_MEM_WRITE_HANDLER  instruction_mem_write
+#define INSTR_MEM_WRITE_HANDLER instruction_mem_write
 
 #endif /* SCOUT_INSTRUCTIONS */
 

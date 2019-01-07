@@ -46,7 +46,7 @@ def main(args):
     if len(args) != 1 + 1:
         print 'Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 1)
         printUsage( args )
-        
+
     # parse the args
     server_ip = args[1]
 
@@ -58,7 +58,7 @@ def main(args):
 
     # configure the scout
     setBitness64()
-    
+
     # start the managing session
     startManage(sock_fd, prompter)
 

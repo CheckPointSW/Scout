@@ -64,4 +64,23 @@ void close(sock_fd fd)
     ((void (*)(sock_fd))get_context()->functions.scout.close)(fd);
 }
 
+#ifdef SCOUT_MMAP
+
+void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+    return ((void * (*)(void *, size_t, int, int, int, off_t))get_context()->functions.scout.mmap)(addr, length, prot, flags, fd, offset);
+}
+
+int mprotect(void * addr, size_t len, int prot)
+{
+    return ((int (*)(void *, size_t, int))get_context()->functions.scout.mprotect)(addr, len, prot);
+}
+
+int munmap(void * addr, size_t length)
+{
+    return ((int (*)(void *, size_t))get_context()->functions.scout.munmap)(addr, length);
+}
+
+#endif /* SCOUT_MMAP */
+
 #endif /* SCOUT_PIC_CODE */

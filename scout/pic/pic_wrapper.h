@@ -39,7 +39,7 @@ typedef struct __pic_context
 
 /**
  * API function that signals the "main" function of scout projects
- * 
+ *
  * @author eyalit (22/03/2018)
  */
 void scout_main();
@@ -52,18 +52,18 @@ void _start(void);
 
 /**
  * Returns a pointer to the PIC management context
- * 
+ *
  * @author eyalit (22/03/2018)
- * 
+ *
  * @return pic_context_t * - pointer to the PIC context
  */
 pic_context_t * get_context();
 
 /**
  * Converts a static address to the actual live address
- * 
+ *
  * @author eyalit (22/03/2018)
- * 
+ *
  * @param address - static address
  *
  * @return void * - fixed dynamic address

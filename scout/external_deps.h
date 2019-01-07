@@ -10,6 +10,7 @@
 
 #define NULL (0)
 typedef addr_t size_t;
+typedef size_t off_t;
 
 void *   memcpy(void * dst, const void * src, size_t size);
 void *   memset(void * dst, int value, size_t size);
@@ -60,5 +61,21 @@ int     connect(sock_fd sockfd, const struct sockaddr * addr, socklen_t addrlen)
 int     recv(sock_fd sockfd, void * buf, size_t len, int flags);
 int     send(sock_fd sockfd, void * buf, size_t len, int flags);
 void    close(sock_fd fd);
+
+/*************************/
+/**  MMap Dependencies  **/
+/*************************/
+
+#define PROT_READ	0x1
+#define PROT_WRITE	0x2
+#define PROT_EXEC	0x4
+
+#define MAP_PRIVATE	0x02
+#define MAP_FIXED	0x10
+#define MAP_ANONYMOUS	0x20
+
+void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset);
+int    mprotect(void * addr, size_t len, int prot);
+int    munmap(void * addr, size_t length);
 
 #endif // __SCOUT__EXTERNAL__DEPS__H__

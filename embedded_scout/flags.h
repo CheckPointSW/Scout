@@ -3,6 +3,7 @@
 
 /* This file is AUTO-GENERATED, please do NOT edit it manually */
 #define SCOUT_EMBEDDED_ENV
+#define SCOUT_MMAP
 #define SCOUT_ARCH_INTEL
 #define SCOUT_LITTLE_ENDIAN
 #define SCOUT_BITS_64
