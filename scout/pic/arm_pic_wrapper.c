@@ -9,7 +9,7 @@
  */
 
 /* Compilation on an intel ubuntu machine, with arm-gcc */
-#define ELF_START           (0x00008000)
+//#define ELF_START           (0x00008000)
 /* Compilation on a raspberry pi */
 //#define ELF_START           (0x00010074)
 

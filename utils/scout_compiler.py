@@ -153,14 +153,14 @@ def setScoutMode(is_user):
     config_mode = flag_mode_user if is_user else flag_mode_kernel
 
 def setScoutFlags(flags):
-    """Adds additional flags regarding the target's specifications
+    """Sets the flags regarding the target's specifications
 
     Args:
         flags (list): list of configuration flags (strings)
     """
     global config_flags
 
-    config_flags += flags
+    config_flags = [] + flags
 
 def setWorkingDirs(project_dir, scout_dir):
     """Sets the paths for the used directories
