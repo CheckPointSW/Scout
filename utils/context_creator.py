@@ -46,7 +46,7 @@ def generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol
         symbol_mprotect (int, optional): (virtual) address of the mprotect() function, or None if unused (None by default)
         symbol_munmap (int, optional): (virtual) address of the munmap() function, or None if unused (None by default)
         project_got (list): list of additional memory addresses for symbols used in the project's GOT
-        is_thumb (bool): True iff the scout was compiled for an ARM thumb mode
+        is_thumb (bool): True iff the scout was compiled to be executed inside an ARM thumb binary
     """
     global full_got
 
@@ -55,8 +55,6 @@ def generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol
                 ]
     if symbol_mmap is not None:
         full_got += [symbol_mmap, symbol_mprotect, symbol_munmap]
-    else:
-        full_got += [0, 0, 0]
 
     full_got += project_got
 
