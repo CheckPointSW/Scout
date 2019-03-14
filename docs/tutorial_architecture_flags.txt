@@ -60,7 +60,11 @@ Note: Can only be used with "SCOUT_EMBEDDED_ENV".
 
 Additional Flags - SCOUT_ARM_THUMB:
 -----------------------------------
-Meaning that scout will be executed on an ARM cpu in Thumb mode. This flag will be used only in PIC mode, in which we use inline assembly.
+Meaning that the code will be executed on an ARM cpu in Thumb mode. This flag will be used only in PIC mode, in which we use inline assembly.
+
+Additional Flags - SCOUT_LOADING_THUMB_CODE:
+--------------------------------------------
+Meaning that the loader will load a Scout that was compiled to be executed on an ARM cpu in Thumb mode.
 
 Additional Flags:
 -----------------
