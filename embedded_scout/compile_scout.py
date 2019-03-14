@@ -110,6 +110,7 @@ def compileScout(logger):
     # 2. Add additional flags:
     #  a) Will use the TCP server for instructions
     #  b) Will use dynamic buffers (malloc) for the received instructions
+    #  c) If scout will also be in Thumb mode, add this flag too: flag_load_thumb
     setScoutFlags([flag_instructions, flag_dynamic_buffers])
 
     # 3. Define the working directories

@@ -57,6 +57,7 @@ flag_restore_flow   = 'SCOUT_RESTORE_FLOW'
 flag_dynamic_buffers= 'SCOUT_DYNAMIC_BUFFERS'
 flag_proxy          = 'SCOUT_PROXY'
 flag_mmap           = 'SCOUT_MMAP'
+flag_load_thumb     = 'SCOUT_LOADING_THUMB_CODE'
 
 # Using an enum to support feature extensions
 ARC_INTEL = 'intel'

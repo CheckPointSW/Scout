@@ -36,7 +36,6 @@ void * get_live_address(const void * address)
     asm("mov    r0, %0              " : : "r" (address));
     asm("sub    r0, %0              " : : "r" (STATIC_FUNC_ADDR));
     asm("add    r0, r1              ");
-    asm("add    r0, #1              ");
 #else  /* SCOUT_BITS_64 */
     #error "Currently ARM 64bit is not supported :("
 #endif /* SCOUT_BITS_32 */
