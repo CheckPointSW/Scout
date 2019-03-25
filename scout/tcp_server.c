@@ -139,10 +139,9 @@ int32_t start_server_loop(sock_fd serverSock)
     socklen_t clientAddrSize = sizeof(clientAddr);
     sock_fd clientSock = 0;
     int res;
-    int32_t status = STATUS_OK;
     scout_header_t header;
     output_data_t ctx;
-    uint8_t outputHeader[sizeof(status) + sizeof(ctx.size)];
+    uint8_t outputHeader[sizeof(ctx.status) + sizeof(ctx.size)];
     uint8_t * writeHead;
 
 #ifndef SCOUT_DYNAMIC_BUFFERS
@@ -151,11 +150,12 @@ int32_t start_server_loop(sock_fd serverSock)
 #else /* SCOUT_DYNAMIC_BUFFERS */
     uint8_t * recvBuffer = (uint8_t *)malloc(SCOUT_HEADER_SIZE + SCOUT_TCP_MAX_MESSAGE);
     uint8_t * sendBuffer = (uint8_t *)malloc(SCOUT_TCP_MAX_MESSAGE);
+    ctx.status = STATUS_OK;
 
     /* Sanity check */
     if(recvBuffer == NULL || sendBuffer == NULL)
     {
-        status = STATUS_ALLOC_FAILED;
+        ctx.status = STATUS_ALLOC_FAILED;
         goto exit_loop;
     }
 #endif /* ! SCOUT_DYNAMIC_BUFFERS */
@@ -172,13 +172,13 @@ int32_t start_server_loop(sock_fd serverSock)
         clientSock = accept(serverSock, (struct sockaddr *)&clientAddr, &clientAddrSize);
         if (clientSock < 0)
         {
-            status = STATUS_TCP_ACCECPT_FAILED;
+            ctx.status = STATUS_TCP_ACCECPT_FAILED;
             goto exit_loop;
         }
-        status = STATUS_OK;
+        ctx.status = STATUS_OK;
 
         /* Client loop */
-        while (status == STATUS_OK)
+        while (ctx.status == STATUS_OK)
         {
             /* Prepare the context */
             ctx.output = sendBuffer;
@@ -189,13 +189,13 @@ int32_t start_server_loop(sock_fd serverSock)
             /* Receive the instruction header */
             if (full_net_recv(clientSock, recvBuffer, SCOUT_HEADER_SIZE) != SCOUT_HEADER_SIZE)
             {
-                status = STATUS_TCP_RECV_FAILED;
+                ctx.status = STATUS_TCP_RECV_FAILED;
                 continue;
             }
 
             /* Parse the header to learn the length */
-            status = parse_header(recvBuffer, SCOUT_HEADER_SIZE, &header, false);
-            if (status != STATUS_OK)
+            ctx.status = parse_header(recvBuffer, SCOUT_HEADER_SIZE, &header, false);
+            if (ctx.status != STATUS_OK)
             {
                 continue;
             }
@@ -203,7 +203,7 @@ int32_t start_server_loop(sock_fd serverSock)
             /* Basic sanitation */
             if (header.length > SCOUT_TCP_MAX_MESSAGE)
             {
-                status = STATUS_ILLEGAL_LENGTH;
+                ctx.status = STATUS_ILLEGAL_LENGTH;
                 continue;
             }
 
@@ -211,31 +211,31 @@ int32_t start_server_loop(sock_fd serverSock)
             if (header.length > 0 &&
 			    full_net_recv(clientSock, &recvBuffer[SCOUT_HEADER_SIZE], header.length) != header.length)
             {
-                status = STATUS_TCP_RECV_FAILED;
+                ctx.status = STATUS_TCP_RECV_FAILED;
                 continue;
             }
 
             /* Pass the instruction onward */
 #ifndef SCOUT_PROXY
-            status = handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
+            handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
 #else /* SCOUT_PROXY */
-            status = proxy_handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
+            proxy_handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
 #endif /* ! SCOUT_PROXY */
 
             writeHead = outputHeader;
-            pack_uint32( &writeHead, status );
+            pack_uint32( &writeHead, ctx.status );
             pack_uint32( &writeHead, ctx.offset );
 
             /* Send the response back - header */
             if (full_net_send(clientSock, outputHeader, sizeof(outputHeader)) != sizeof(outputHeader))
             {
-                status = STATUS_TCP_SEND_FAILED;
+                ctx.status = STATUS_TCP_SEND_FAILED;
                 continue;
             }
             /* Send the response back - data */
             if (ctx.offset > 0 && full_net_send(clientSock, ctx.output, ctx.offset) != ctx.offset)
             {
-                status = STATUS_TCP_SEND_FAILED;
+                ctx.status = STATUS_TCP_SEND_FAILED;
                 continue;
             }
         }
@@ -265,6 +265,6 @@ exit_loop:
     free(sendBuffer);
 #endif /* SCOUT_DYNAMIC_BUFFERS */
 
-    return status;
+    return ctx.status;
 }
 #endif /* SCOUT_INSTRUCTIONS */

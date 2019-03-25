@@ -61,7 +61,8 @@ int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer
         if (header->length < instr->minLength ||
             instr->maxLength < header->length)
         {
-            return STATUS_ILLEGAL_LENGTH;
+            status = STATUS_ILLEGAL_LENGTH;
+            break;
         }
 
         /* Can now handle the instruction */
@@ -70,6 +71,7 @@ int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer
 #else
         status = instr->handler(ctx, buffer, header->length);
 #endif /* SCOUT_PIC_CODE */
+        break;
     }
 
     mark_status(ctx, status);
