@@ -70,7 +70,7 @@ def addErrorCodes(errors):
     """
     global error_codes
 
-    for k, v in errors:
+    for k, v in errors.iteritems():
         error_codes[k] = v
 
 #########################
