@@ -81,7 +81,7 @@ def compileScoutLoader(logger):
     compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
 
     # 5. Generate the list of compiled files
-    compilation_files = map(lambda f: os.path.join(SCOUT_DIR, f), scout_loader_deps + [scout_server_loader]) + project_pic_files
+    compilation_files = map(lambda f: os.path.join(SCOUT_DIR, f), scout_loader_deps + [scout_server_loader])
 
     # 6. Compile an embedded scout
     logger.info("Starting to compile the scout loader")
