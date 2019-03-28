@@ -43,15 +43,19 @@ symbol_close   		= 0x80487e0
 symbol_mmap    		= 0x8048740
 symbol_mprotect		= 0x8048680
 symbol_munmap  		= 0x8048790
+# Loader Functions (none for now)
+loader_got          = []
 # Project Functions (none for now)
 project_got         = []
 
+# loader files list
+loader_pic_files    = ['loader_plt.c', 'loader_globals.c']
 # project files list
 project_pic_files   = ['project_plt.c', 'project_globals.c']
 project_files       = ['arm_scout.c', 'project_instructions.c'] + project_pic_files
 
 ##
-# Sets the bsaic architecture flags for our target
+# Sets the basic architecture flags for our target
 ##
 def setTargetFlags(logger):
     # 1. Set the architecture
@@ -72,7 +76,7 @@ def compileScoutLoader(logger):
 
     # 2. Additional flags: thumb mode (if in ARM), and mmap (in both cases)
     #  Note: If scout will also be in Thumb mode, add this flag too: flag_load_thumb
-    setScoutFlags([flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
+    setScoutFlags([flag_loader] + [flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
 
     # 3. Define the working directories
     setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
@@ -81,7 +85,7 @@ def compileScoutLoader(logger):
     compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
 
     # 5. Generate the list of compiled files
-    compilation_files = map(lambda f: os.path.join(SCOUT_DIR, f), scout_loader_deps + [scout_server_loader])
+    compilation_files = map(lambda f: os.path.join(SCOUT_DIR, f), scout_loader_deps + [scout_server_loader]) + loader_pic_files
 
     # 6. Compile an embedded scout
     logger.info("Starting to compile the scout loader")
@@ -90,7 +94,7 @@ def compileScoutLoader(logger):
     # 7. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
                 symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
-                symbol_mmap, symbol_mprotect, symbol_munmap, project_got, is_thumb=TARGET_ARCH == ARC_ARM)
+                symbol_mmap, symbol_mprotect, symbol_munmap, project_got=loader_got, is_thumb=TARGET_ARCH == ARC_ARM)
 
     # 8. Setup the sizes for the global variables (No variables used at all)
     generateGlobals(scout_vars_size=0, project_vars_size=0)

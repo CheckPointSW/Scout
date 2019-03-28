@@ -66,6 +66,10 @@ Additional Flags - SCOUT_LOADING_THUMB_CODE:
 --------------------------------------------
 Meaning that the loader will load a Scout that was compiled to be executed on an ARM cpu in Thumb mode.
 
+Additional Flags - SCOUT_LOADER:
+--------------------------------
+Meaning that we are compiling a loader (that might be using it's oen pic plt / globals).
+
 Additional Flags:
 -----------------
 * SCOUT_INSTRUCTIONS - Scout is going to use the instructions api (using the tcp server for instance)
