@@ -8,8 +8,13 @@
 #include "scout/pic/scout_plt.h"
 #include "scout/pic/scout_globals.h"
 /* Project Extensions */
+#ifdef SCOUT_LOADER
+#include "loader_plt.h"
+#include "loader_globals.h"
+#else /* !SCOUT_LOADER */
 #include "project_plt.h"
 #include "project_globals.h"
+#endif /* SCOUT_LOADER */
 
 /***************/
 /**  Structs  **/

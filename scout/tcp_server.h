@@ -30,7 +30,7 @@ typedef int sock_fd;
 typedef struct __output_data
 {
     uint8_t *   output;
-    uint16_t    offset;
+    uint32_t    offset;
     uint32_t    size;
     int32_t     status;
 } output_data_t;
