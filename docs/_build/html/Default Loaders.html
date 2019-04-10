@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scout’s Loader &mdash; Scout  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Adding Custom Instructions" href="Adding Custom Instructions.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Scout
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="User Guide.html">User Guide</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Compilation Modes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Compilation Modes.html">Compilation Modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PIC Compilation.html">Position Independent Code (PIC) Mode</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Scout Instructions:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Default Instructions.html">Scout Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Adding Custom Instructions.html">Adding Custom Instructions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Loaders:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scout’s Loader</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Scout</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Scout’s Loader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Default Loaders.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scout-s-loader">
+<span id="scout-s-loader"></span><h1>Scout’s Loader<a class="headerlink" href="#scout-s-loader" title="Permalink to this headline">¶</a></h1>
+<p>Embedded debuggers often require an initial code execution vulnerability, that will load up the debugger (instead of using a normal “shellcode”). Exploits for such vulnerabilities are often limited:</p>
+<ol class="simple">
+<li>Size limits on the controlled input</li>
+<li>Forbidden chars that must not be used</li>
+</ol>
+<p>To overcome these limitations, the scout debugger comes with a list of supported default loaders. These loaders are self-contained and are compiled to a smaller memory footprint that the entire scout debugger (especially in case there are project specific extensions to the debugger).</p>
+<p>The defualt loaders are:</p>
+<ol class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">tcp_client_loader.c</span></code> - Connects to a predefined TCP server</li>
+<li><code class="docutils literal notranslate"><span class="pre">tcp_server_loader.c</span></code> - Waits for an incoming TCP client</li>
+</ol>
+<p>Both of the loaders use the same network protocol:</p>
+<ul class="simple">
+<li>header - 4 bytes of length field (in network order, i.e. Big Endian)</li>
+<li>data - X bytes of data (X is the value that was sent in the header)</li>
+</ul>
+<p>After a TCP connection was established, the loader will follow these steps:</p>
+<ol class="simple">
+<li>The loader will receive the header and malloc() a memory buffer of appropriate size.</li>
+<li>The data will be received and stored in this memory buffer.</li>
+<li>The loader will flush the D-cache and I-cache of the buffer (only in architectures were this is needed)</li>
+<li>The loader will mprotect() the memory to use the correct permissions (only in architectures were this is needed)</li>
+<li>The loader will jump into the buffer’s start (offset 0, as mentioned in the “PIC Compilation” section)</li>
+<li>In the flow restore case, once the loaded executable finishes the loader will free the memory and close the used sockets.</li>
+</ol>
+<p>The functions <code class="docutils literal notranslate"><span class="pre">remoteLoadServer()</span></code> and <code class="docutils literal notranslate"><span class="pre">remoteLoadClient()</span></code> in <code class="docutils literal notranslate"><span class="pre">scout_network.py</span></code>, implement the required protocol for communicating with the loader, and loading up the full Scout.</p>
+<p><strong>Note:</strong> In case there are any W^X style limitations in your environment, it is recommended to make sure that the allocated memory for the full debugger will have both Write and eXcutable permissions (should probably use the SCOUT_MMAP flag in this case).</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="Adding Custom Instructions.html" class="btn btn-neutral" title="Adding Custom Instructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Eyal Itkin
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
