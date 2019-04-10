@@ -1,5 +1,43 @@
+.. Scout documentation master file, created by
+   sphinx-quickstart on Wed Apr 10 10:04:29 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-      ______                                   __                                   
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide:
+   :hidden:
+
+   User Guide
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Compilation Modes:
+   :hidden:
+
+   Compilation Modes
+   PIC Compilation
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Scout Instructions:
+   :hidden:
+
+   Default Instructions
+   Adding Custom Instructions
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Loaders:
+   :hidden:
+
+   Default Loaders
+   
+..
+   
+::
+
+      ______                                   __
      /      \                                 /  |                                  
     /$$$$$$  |  _______   ______   __    __  _$$ |_                                 
     $$ \__$$/  /       | /      \ /  |  /  |/ $$   |                                
@@ -22,51 +60,50 @@
                                             $$    $$/ $$    $$/                     
                                              $$$$$$/   $$$$$$/
                                              
-## Purpose
+
+Brief
+=====
 "Scout" is an extendable basic debugger that was designed for use in those cases that there is no built-in debugger / gdb-stub in the debugee process / firmware. The debugger is intended to be used by security researchers in various scenarios, such as:
+
 1. Collecting information on the address space of the debuggee - recon phase and exploit development
 2. Exploring functionality of the original executable by accessing and executing selected code snippets
 3. Adding and testing new functionality using custom debugger instructions
 
-We have successfully used "Scout" as a debugger in a Linux Kernel setup, and in several embedded firmware research projects, and so we believe that it's extendable API could prove handy for other security researchers in their research projects.
+We have successfully used "Scout" as a debugger in a Linux Kernel setup, and in an several embedded firmware research projects, and so we believe that it's extendable API could prove handy for other security researchers in their research projects.
 
-## Read The Docs
-https://scout.readthedocs.io/
-
-### Supported Architectures
+Supported Architectures
+-----------------------
 * x86 - Intel 32 bit
 * x64 - Intel 64 bit
 * ARM 32 bit - Little & Big endian (Including Thumb mode)
 
-##### Future Architectures
+**Future Architectures**
+
 * ARM 64 bit  - Little & Big endian
 * MIPS 32 bit - Little & Big endian
 * ...
 
-### Supported Operating Systems
+Supported Operating Systems
+---------------------------
 * Linux - User-mode (PC Mode)
 * Linux - Kernel-mode (PC Mode)
 * Any Posix-like operating system (Embedded Mode)
 
-## Folder Structure
-* **docs:** Useful tutorials regarding each unique module of the debugger, including documentation of the API used for custom extensions
-* **embedded_scout:** Example project for an embedded debugger scenario, i.e. a debugger that is injected into the address space of a debuggee firmware
-* **kernel_scout:** Linux kernel driver-based debugger, including a proxy user mode process used for transparent network access
-* **manager:** Python layer for communicating with the debuggee (usually over a TCP connection)
-* **scout:** C code of the basic scout debugger
-* **tests:** A testing utility for PIC based debuggers
-* **utils:** Useful python compilation scripts
-
-## Credits
+Credits
+-------
 This projects combines together design and compilation tricks that I learned from many fellow researchers during the years.
 
-## Links
-Scout was developed and used in our following research projects:
-* [Check Point Research - RCE over the FAX protocol](https://research.checkpoint.com/sending-fax-back-to-the-dark-ages)
-* [Check Point Research - Linux Kernel MMap vulnerabilities](https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel)
+Links
+-----
+* https://github.com/CheckPointSW/Scout
+
+Scout was used in our following research projects:
+
+* https://research.checkpoint.com/sending-fax-back-to-the-dark-ages
+* https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel
 * TBA
 
-## Contact
-Eyal Itkin (eyalit at checkpoint dot com)
-
-[@EyalItkin](https://twitter.com/EyalItkin)
+Contact
+-------
+* `@EyalItkin <https://twitter.com/EyalItkin>`_ 
+* eyalit at checkpoint dot com
