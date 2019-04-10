@@ -31,7 +31,7 @@
 We have successfully used "Scout" as a debugger in a Linux Kernel setup, and in several embedded firmware research projects, and so we believe that it's extendable API could prove handy for other security researchers in their research projects.
 
 ## Read The Docs
-https://scout.readthedocs.io/
+https://scout-debugger.readthedocs.io/
 
 ### Supported Architectures
 * x86 - Intel 32 bit
