@@ -100,8 +100,8 @@ Links
 Scout was used in our following research projects:
 
 * https://research.checkpoint.com/sending-fax-back-to-the-dark-ages
+* https://research.checkpoint.com/say-cheese-ransomware-ing-a-dslr-camera
 * https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel
-* TBA
 
 Contact
 -------

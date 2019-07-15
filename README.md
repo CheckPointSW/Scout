@@ -63,8 +63,8 @@ This projects combines together design and compilation tricks that I learned fro
 ## Links
 Scout was developed and used in our following research projects:
 * [Check Point Research - RCE over the FAX protocol](https://research.checkpoint.com/sending-fax-back-to-the-dark-ages)
+* [Check Point Research - Say Cheese - Ransomware-ing A DSLR Camera](https://research.checkpoint.com/say-cheese-ransomware-ing-a-dslr-camera)
 * [Check Point Research - Linux Kernel MMap vulnerabilities](https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel)
-* TBA
 
 ## Contact
 Eyal Itkin (eyalit at checkpoint dot com)
