@@ -5,6 +5,7 @@
 
 void flush_cache(uint8_t * buffer, uint32_t size)
 {
+#if defined(SCOUT_MODE_KERNEL) || defined(SCOUT_EMBEDDED_ENV)
     asm("    MOV             R2, R0                                                       ");
     asm("    ADR             R0, flush_cache_inner                                        ");
     asm("    BX              R0                                                           ");
@@ -28,6 +29,9 @@ void flush_cache(uint8_t * buffer, uint32_t size)
 
     /* return */
     asm("    BX              LR                                                           ");
+#else
+    /* No permissions to perform these operations :( */
+#endif
 }
 
 #endif /* SCOUT_ARCH_ARM */

@@ -14,7 +14,7 @@
 //#define ELF_START           (0x00010074)
 
 #ifndef ELF_START
-    #error "\"ELF_START\" symbol is missing! Should be defined to the address of the \"_Start\ function in the ELF."
+    #error "\"ELF_START\" symbol is missing! Should be defined to the address of the \"_start\ function in the ELF."
 #endif /* ELF_START */
 
 #ifdef SCOUT_ARM_THUMB

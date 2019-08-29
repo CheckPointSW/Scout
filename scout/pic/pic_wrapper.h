@@ -53,7 +53,11 @@ void scout_main();
 /**  Functions  **/
 /*****************/
 
+#ifdef SCOUT_ARCH_MIPS
+void __start(void);
+#else
 void _start(void);
+#endif
 
 /**
  * Returns a pointer to the PIC management context

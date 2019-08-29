@@ -18,6 +18,12 @@ arm_linker_path     = '/usr/bin/arm-none-eabi-ld'
 arm_objcopy_path    = '/usr/bin/arm-none-eabi-objcopy'
 arm_objcopy_flags   = ['--section-alignment 4']
 
+# Mips Compiler
+mips_compiler_path   = '/usr/bin/mips-linux-gnu-gcc'
+mips_linker_path     = '/usr/bin/mips-linux-gnu-ld'
+mips_objcopy_path    = '/usr/bin/mips-linux-gnu-objcopy'
+mips_objcopy_flags   = ['--section-alignment 4']
+
 # Intel Compiler
 intel_compiler_path = 'gcc'
 intel_linker_path   = 'ld'
@@ -30,6 +36,7 @@ basic_pc_compile_flags          = ['O2']
 basic_embedded_compile_flags    = ['Os', 'nostdlib', 'fno-toplevel-reorder']
 intel_embedded_compile_flags    = []
 arm_embedded_compile_flags      = ['fno-jump-tables', 'mapcs-frame']
+mips_embedded_compile_flags     = ['fno-jump-tables', 'mno-shared', "mplt"]
 basic_link_flags                = []
 
 #############################
@@ -45,6 +52,7 @@ flag_64_bit         = 'SCOUT_BITS_64'
 flag_big_endian     = 'SCOUT_BIG_ENDIAN'
 flag_little_endian  = 'SCOUT_LITTLE_ENDIAN'
 flag_arc_arm        = 'SCOUT_ARCH_ARM'
+flag_arc_mips       = 'SCOUT_ARCH_MIPS'
 flag_arc_intel      = 'SCOUT_ARCH_INTEL'
 flag_arc_thumb      = 'SCOUT_ARM_THUMB'
 flag_mode_user      = 'SCOUT_MODE_USER'
@@ -63,19 +71,22 @@ flag_loader         = 'SCOUT_LOADER'
 # Using an enum to support feature extensions
 ARC_INTEL = 'intel'
 ARC_ARM   = 'arm'
+ARC_MIPS  = 'mips'
 
 arc_setups = {
                 ARC_INTEL:  (intel_compiler_path, intel_linker_path, intel_objcopy_path, intel_objcopy_flags),
                 ARC_ARM:    (arm_compiler_path, arm_linker_path, arm_objcopy_path, arm_objcopy_flags),
+                ARC_MIPS:   (mips_compiler_path, mips_linker_path, mips_objcopy_path, mips_objcopy_flags),
              }
 arc_configs = {
                 ARC_INTEL:  flag_arc_intel,
                 ARC_ARM:    flag_arc_arm,
+                ARC_MIPS:   flag_arc_mips,
               }
 
 # scout file list
-scout_arc_files     = ['arc/arm.c', 'arc/intel.c']
-scout_pic_files     = ['pic/arm_pic_wrapper.c', 'pic/intel_pic_wrapper.c', 'pic/scout_plt.c', 'pic/scout_globals.c']
+scout_arc_files     = ['arc/arm.c', 'arc/mips.c', 'arc/intel.c']
+scout_pic_files     = ['pic/arm_pic_wrapper.c', 'pic/mips_pic_wrapper.c', 'pic/intel_pic_wrapper.c', 'pic/scout_plt.c', 'pic/scout_globals.c']
 scout_server_loader = 'loaders/tcp_server_loader.c'
 scout_client_loader = 'loaders/tcp_client_loader.c'
 scout_loader_deps   = scout_pic_files + ['pack.c', 'tcp_server.c'] + scout_arc_files
@@ -286,14 +297,21 @@ def generateCompilationFlags(compile_flags, link_flags, logger):
     orig_compile_flags  = [] + basic_compile_flags
     orig_link_flags     = [] + basic_link_flags
 
-    # Additional non-Intel flags
-    if config_arc != flag_arc_intel:
-        # Endianness
+    # Endianness - Arm
+    if config_arc == flag_arc_arm:
         if config_endianness == flag_little_endian:
             basic_compile_flags += ['mlittle-endian']
             basic_link_flags    += ['EL']
         else:
             basic_compile_flags += ['mbig-endian']
+            basic_link_flags    += ['EB']
+    # Endianness - Mips
+    elif config_arc == flag_arc_mips:
+        if config_endianness == flag_little_endian:
+            basic_compile_flags += ['EL']
+            basic_link_flags    += ['EL']
+        else:
+            basic_compile_flags += ['EB']
             basic_link_flags    += ['EB']
 
         # Thumb
@@ -310,14 +328,16 @@ def generateCompilationFlags(compile_flags, link_flags, logger):
         if config_arc == flag_arc_intel:
             basic_compile_flags += intel_embedded_compile_flags
         # Arm Arc
-        else:
+        elif config_arc == flag_arc_arm:
             basic_compile_flags += arm_embedded_compile_flags
+        # Mips Arc
+        else:
+            basic_compile_flags += mips_embedded_compile_flags
 
     # Robustness (bitness) flag
     if config_bitness == flag_32_bit:
-        if config_arc != flag_arc_arm:
-            basic_compile_flags += ['m32']
         if config_arc == flag_arc_intel:
+            basic_compile_flags += ['m32']
             basic_link_flags    += ['melf_i386']
 
     # Final Compile & Link flags
@@ -377,6 +397,10 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
         content = fd.read()
         fd.close()
         content = content.replace(".space #", ".space ").replace(".space $", ".space ")
+        # convert the calls to relative (PIC)
+        if config_arc == flag_arc_mips:
+            content = content.replace("\tjal\t", "\tbal\t")
+            content = content.replace("\tj\t", "\tb\t")
         fd = open(s_file, 'w')
         fd.write(content)
         fd.close()

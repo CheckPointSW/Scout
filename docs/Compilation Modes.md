@@ -29,13 +29,16 @@ If none are defined the base library will define "SCOUT_BITS_32" on it's own.
 Target CPU Architecture
 -----------------------
 * SCOUT_ARCH_INTEL - Scout is executed on an Intel (x86 \ x64) CPU
-* SCOUT_ARCH_ARM - Scout is executed on an ARM (maybe thumb mode) CPU
+* SCOUT_ARCH_ARM   - Scout is executed on an ARM (maybe thumb mode) CPU
+* SCOUT_ARCH_MIPS  - Scout is executed on a  MIPS (*not* mips16 mode) CPU
 
 Only one of above flags can be defined.
 If none are defined the base library will define "SCOUT_ARCH_INTEL" on it's own.
 
-**Additional Flags:** SCOUT_ARM_THUMB - Scout will be executed on an ARM cpu in Thumb mode. Can only be used together with the "SCOUT_ARCH_ARM" flag.
-This flag is needed only in PIC mode, in which we use inline assembly.
+**Additional Flags:**
+* SCOUT_ARM_THUMB - Scout will be executed on an ARM cpu in Thumb mode. Can only be used together with the "SCOUT_ARCH_ARM" flag.
+
+The flags is needed only in PIC mode, in which we use inline assembly.
 
 Target Permission Level
 -----------------------
