@@ -21,8 +21,11 @@ void     free(void * ptr);
 /**  Socket Dependencies  **/
 /***************************/
 
+/* GLIBC Constants */
 #define SOCK_STREAM     1
 #define SOCK_DGRAM      2
+/* uCLIBC Constants */
+//#define SOCK_STREAM     2
 
 #define AF_INET         2
 
@@ -70,9 +73,12 @@ void    close(sock_fd fd);
 #define PROT_WRITE	0x2
 #define PROT_EXEC	0x4
 
+/* GLIBC Constants */
 #define MAP_PRIVATE	0x02
 #define MAP_FIXED	0x10
 #define MAP_ANONYMOUS	0x20
+/* uCLIBC Constants */
+//#define MAP_ANONYMOUS	0x800
 
 void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset);
 int    mprotect(void * addr, size_t len, int prot);

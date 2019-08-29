@@ -58,7 +58,7 @@ void scout_main()
 #endif /* SCOUT_MMAP */
 
     /* Jump into the buffer */
-#ifdef SCOUT_LOADING_THUMB_CODE
+#if defined(SCOUT_LOADING_THUMB_CODE)
     ((void (*)(void))receiveBuffer + 1)();
 #else
     ((void (*)(void))receiveBuffer)();

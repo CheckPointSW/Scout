@@ -48,12 +48,31 @@ typedef uint64_t addr_t;
 /************************/
 
 /* Sanity check */
-#if defined(SCOUT_ARCH_INTEL) && defined(SCOUT_ARCH_ARM)
-    #error "Both Intel CPU architecture AND ARM CPU architecture are defined!"
+#undef SCOUT_ARCH
+#if defined(SCOUT_ARCH_INTEL)
+    #define SCOUT_ARCH
+#endif
+#if defined(SCOUT_ARCH_ARM)
+    #if defined(SCOUT_ARCH)
+        #error "Multiple CPU architecture are defined!"
+    #else
+        #define SCOUT_ARCH
+    #endif
+#endif
+#if defined(SCOUT_ARCH_MIPS)
+    #if defined(SCOUT_ARCH)
+        #error "Multiple CPU architecture are defined!"
+    #else
+        #define SCOUT_ARCH
+    #endif
+#endif
+
+#if defined(SCOUT_ARM_THUMB) && !defined(SCOUT_ARCH_ARM)
+    #error "ARM Thumb-Mode must only be used when ARM CPU architecture is defined!"
 #endif
 
 /* Default values */
-#if !defined(SCOUT_ARCH_INTEL) && !defined(SCOUT_ARCH_ARM)
+#if !defined(SCOUT_ARCH)
     #define SCOUT_ARCH_INTEL
 #endif
 
