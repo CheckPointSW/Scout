@@ -130,7 +130,7 @@ def setScoutArc(arc, is_32_bits, is_little_endian, logger, is_native=False):
 
     # Sanity check
     if arc not in arc_setups.keys():
-        logger.error("Unknown architecture: \"%s\". Supported options are: \"%s\"" % (arc, ', '.join(arc_setups.keys())))
+        logger.error("Unknown architecture: \"%s\". Supported options are: \"%s\"", arc, ', '.join(arc_setups.keys()))
 
     # Apply the chosen settings
     compiler_path, linker_path, objcopy_path, objcopy_flags = arc_setups[arc]
@@ -264,7 +264,7 @@ def generateFlagsFile(logger):
         return
 
     flag_path = os.path.join(project_folder, FLAGS_FILE_NAME)
-    logger.info("Generating the %s file" % (flag_path))
+    logger.info("Generating the %s file", flag_path)
     fd = open(flag_path, "w")
     # file prefix
     fd.write('#ifndef __SCOUT__FLAGS__H__\n')

