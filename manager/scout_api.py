@@ -97,7 +97,7 @@ def instrNop():
     Return Value:
         string containing the serialized instruction
     """
-    return addHeader( SCOUT_INST_NOP, '' )
+    return addHeader( SCOUT_INST_NOP, b'' )
 
 def instrMemRead(addr, length):
     """Builds the Read (Virtual) Memory instruction

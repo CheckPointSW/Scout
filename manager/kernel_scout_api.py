@@ -58,5 +58,5 @@ def instrLeakAddr():
     Return Value:
         string containing the serialized instruction
     """
-    return addHeader( SCOUT_INST_LEAK_ADDR, '' )
+    return addHeader( SCOUT_INST_LEAK_ADDR, b'' )
 
