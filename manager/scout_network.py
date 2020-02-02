@@ -37,7 +37,7 @@ def sendInstr(sock, instr, logger):
         logger.debug("Status was OK")
 
     logger.debug("Output data size is: %d", size)
-    data = ''
+    data = bytes()
     while size - len(data) > 0:
         data += sock.recv(size - len(data))
     logger.debug("Received %d output bytes", len(data))
