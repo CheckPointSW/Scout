@@ -35,16 +35,8 @@ pic_context_t * get_context()
     asm("pop    %ecx                 ");
     asm("pop    %ebx                 ");
 #else  /* SCOUT_BITS_64 */
-    asm("push   %rbx                 ");
-    asm("push   %rcx                 ");
-    asm("lea    CONTEXT_LABEL, %rbx  ");
-    asm("call   get_pc               ");
-    asm("MEASURE_LABEL1:             ");
-    asm("lea    MEASURE_LABEL1, %rcx ");
-    asm("sub    %rcx, %rbx           ");
-    asm("add    %rbx, %rax           ");
-    asm("pop    %rcx                 ");
-    asm("pop    %rbx                 ");
+    /* Function pointers are stored in a PIC fashion by default in 64 bits */
+    asm("movq   %0, %%rax            " : : "r" ((addr_t)address));
 #endif /* SCOUT_BITS_32 */
 }
 
