@@ -66,6 +66,8 @@ This projects combines together design and compilation tricks that I learned fro
 Scout was developed and used in our following research projects:
 * [Check Point Research - RCE over the FAX protocol](https://research.checkpoint.com/sending-fax-back-to-the-dark-ages)
 * [Check Point Research - Say Cheese - Ransomware-ing A DSLR Camera](https://research.checkpoint.com/say-cheese-ransomware-ing-a-dslr-camera)
+* [Check Point Research - Don't be Silly - It's Only a Lightbulb](https://research.checkpoint.com/2020/dont-be-silly-its-only-a-lightbulb/)
+* [Check Point Research - Would you like some RCE with your Guacamole?](https://research.checkpoint.com/2020/apache-guacamole-rce/)
 * [Check Point Research - Linux Kernel MMap vulnerabilities](https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel)
 
 ## Contact
