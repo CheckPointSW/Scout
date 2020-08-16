@@ -60,7 +60,7 @@ def generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol
 
     # Check if we need to adjust it
     if is_thumb:
-        full_got = map(lambda x: x + 1, full_got)
+        full_got = [x + 1 for x in full_got]
 
 def generateGlobals(scout_vars_size=scout_instructions_globals_32_size, project_vars_size=0):
     """Configures the globals blob using the supplied sizes
@@ -139,4 +139,4 @@ def placeContext(compiled_file, shellcode_file, is_little_endian, is_32_bit, log
     fd.write(shellcode)
     fd.close()
 
-    logger.info("Complete shellcode was saved to: %s", shellcode_file)
+    logger.info(f"Complete shellcode was saved to: {shellcode_file}")

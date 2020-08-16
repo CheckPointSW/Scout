@@ -6,7 +6,7 @@ import struct
 from elementals import Prompter
 
 # Assuming the script is executed from its directory
-sys.path.append("../../utils")
+sys.path.append('../../utils')
 
 from scout_compiler  import *
 
@@ -58,10 +58,10 @@ def compileScout(logger):
     compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
 
     # 5. Generate the list of compiled files
-    compilation_files = list(map(lambda f: os.path.join(SCOUT_DIR, f), scout_all_files)) + project_files
+    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_all_files] + project_files
 
-    # 6. Compile an embedded scout
-    logger.info("Starting to compile the user scout")
+    # 6. Compile the PC (user mode proxy) scout
+    logger.info('Starting to compile the user scout')
     compilePCScout(compilation_files, compile_flags, link_flags, USER_SCOUT_BIN, logger)
 
     # Finished :)
@@ -71,8 +71,8 @@ def compileScout(logger):
 # Prints the usage instructions
 ##
 def printUsage(args):
-    print('Usage: %s' % (args[0].split(os.path.sep)[0]))
-    print('Exitting')
+    print(f'Usage: {args[0].split(os.path.sep)[0]}')
+    print('Exiting')
     exit(1)
 
 ##
@@ -81,7 +81,7 @@ def printUsage(args):
 def main(args) :
     # Check the arguments (None for now)
     if len(args) != 1 + 0:
-        print('Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 0))
+        print(f'Wrong amount of arguments, got {len(args) - 1}, expected 0')
         printUsage(args)
 
     # Create the logger
@@ -90,7 +90,7 @@ def main(args) :
     # Compile the user scout
     compileScout(prompter)
 
-    prompter.info("Finished Successfully")
+    prompter.info('Finished Successfully')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main(sys.argv)
