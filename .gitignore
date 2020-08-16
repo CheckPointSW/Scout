@@ -32,3 +32,9 @@ tests/exploit_me_64
 # Compiled python modules
 utils/*.pyc
 manager/*.pyc
+
+# Generated docs
+docs/_build/*
+docs/_build/*/*
+docs/_build/*/*/*
+docs/_build/*/*/*/*
