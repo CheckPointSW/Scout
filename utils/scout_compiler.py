@@ -36,7 +36,7 @@ basic_pc_compile_flags          = ['O2']
 basic_embedded_compile_flags    = ['Os', 'nostdlib', 'fno-toplevel-reorder']
 intel_embedded_compile_flags    = []
 arm_embedded_compile_flags      = ['fno-jump-tables', 'mapcs-frame']
-mips_embedded_compile_flags     = ['fno-jump-tables', 'mno-shared', "mplt"]
+mips_embedded_compile_flags     = ['fno-jump-tables', 'mno-shared', 'mplt']
 basic_link_flags                = []
 
 #############################
@@ -44,7 +44,7 @@ basic_link_flags                = []
 #############################
 
 # flags files
-FLAGS_FILE_NAME     = "flags.h"
+FLAGS_FILE_NAME     = 'flags.h'
 
 # configuration compile flags
 flag_32_bit         = 'SCOUT_BITS_32'
@@ -190,7 +190,7 @@ def setWorkingDirs(project_dir, scout_dir):
     if scout_folder.endswith(os.path.sep + "scout"):
         main_folder = os.path.sep.join(scout_folder.split(os.path.sep)[:-1])
     else:
-        main_folder = scout_folder + os.path.sep + '..'
+        main_folder = scout_folder + os.path.sep + ".."
 
     # Can update the include directories
     include_dirs = [project_folder, main_folder]
@@ -241,11 +241,9 @@ def verifyScoutFlags(logger):
         return False
 
     # Reaching here means that all was OK
-    additional_flags = [] + config_flags
-    config_flags  = [config_bitness, config_endianness, config_arc, config_env, config_mode]
+    config_flags  += [config_bitness, config_endianness, config_arc, config_env, config_mode]
     if len(config_pic) > 0:
         config_flags += [config_pic]
-    config_flags += additional_flags
     return True
 
 def generateFlagsFile(logger):
@@ -264,20 +262,20 @@ def generateFlagsFile(logger):
         return
 
     flag_path = os.path.join(project_folder, FLAGS_FILE_NAME)
-    logger.info("Generating the %s file", flag_path)
+    logger.info(f"Generating the {flag_path} file")
     fd = open(flag_path, "w")
     # file prefix
-    fd.write('#ifndef __SCOUT__FLAGS__H__\n')
-    fd.write('#define __SCOUT__FLAGS__H__\n')
+    fd.write("#ifndef __SCOUT__FLAGS__H__\n")
+    fd.write("#define __SCOUT__FLAGS__H__\n")
     fd.write('\n')
     # auto-generation comment
     fd.write("/* This file is AUTO-GENERATED, please do NOT edit it manually */\n")
     # The actual flags
     for flag in set(config_flags):
-        fd.write("#define %s\n" % (flag))
+        fd.write(f"#define {flag}\n")
     # file suffix
-    fd.write('\n')
-    fd.write('#endif /* _SCOUT__FLAGS__H__ */')
+    fd.write("\n")
+    fd.write("#endif /* _SCOUT__FLAGS__H__ */")
     # can close the file
     fd.close()
 
@@ -341,8 +339,8 @@ def generateCompilationFlags(compile_flags, link_flags, logger):
             basic_link_flags    += ['melf_i386']
 
     # Final Compile & Link flags
-    compile_flags = ' '.join(map(lambda x: '-' + x, (basic_compile_flags + compile_flags + map(lambda y: 'I' + y, include_dirs))))
-    link_flags    = ' '.join(map(lambda x: '-' + x, basic_link_flags + link_flags))
+    compile_flags = ' '.join(['-' + x for x in basic_compile_flags + compile_flags + ['I' + y for y in include_dirs]])
+    link_flags    = ' '.join(['-' + x for x in basic_link_flags + link_flags])
 
     # Restore the global flags
     basic_compile_flags  = [] + orig_compile_flags
@@ -386,22 +384,21 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     logger.info("Compiling the *.c files")
     s_files = []
     for c_file in compilation_files:
-        local_out_file = '.'.join(c_file.split('.')[:-1]) + '.S'
-        systemLine("%s -S -c %s %s -o %s" % (compiler_path, compile_flags, c_file, local_out_file), logger)
+        local_out_file = ".".join(c_file.split(".")[:-1]) + ".S"
+        systemLine(f"{compiler_path} -S -c {compile_flags} {c_file} -o {local_out_file}", logger)
         s_files.append(local_out_file)
 
     # 3. Work-around GCC's bugs
     logger.info("Fixing the *.S files to work around GCC's bugs")
     for s_file in s_files:
-        fd = open(s_file, 'r')
+        fd = open(s_file, "r")
         content = fd.read()
         fd.close()
         content = content.replace(".space #", ".space ").replace(".space $", ".space ")
         # convert the calls to relative (PIC)
         if config_arc == flag_arc_mips:
-            content = content.replace("\tjal\t", "\tbal\t")
-            content = content.replace("\tj\t", "\tb\t")
-        fd = open(s_file, 'w')
+            content = content.replace("\tjal\t", "\tbal\t").replace("\tj\t", "\tb\t")
+        fd = open(s_file, "w")
         fd.write(content)
         fd.close()
 
@@ -409,17 +406,17 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     logger.info("Compiling the *.S files")
     o_files = []
     for s_file in s_files:
-        local_out_file = '.'.join(s_file.split('.')[:-1]) + '.o'
-        systemLine("%s -c %s %s -o %s" % (compiler_path, compile_flags, s_file, local_out_file), logger)
+        local_out_file = ".".join(s_file.split(".")[:-1]) + ".o"
+        systemLine(f"{compiler_path} -c {compile_flags} {s_file} -o {local_out_file}", logger)
         o_files.append(local_out_file)
 
     # 5. Link together all of the *.o files
-    logger.info("Linking together all of the files, creating: %s", elf_file)
-    systemLine("%s %s %s -o %s" % (linker_path, link_flags, ' '.join(o_files), elf_file), logger)
+    logger.info(f"Linking together all of the files, creating: {elf_file}")
+    systemLine(f"{linker_path} {link_flags} {' '.join(o_files)} -o {elf_file}", logger)
 
     # 6. Objcopy the content to the actual wanted file
-    logger.info("Extracting the final binary to: %s", final_file)
-    systemLine("%s -O binary -j .text -j .rodata %s %s %s" % (objcopy_path, ' '.join(objcopy_flags), elf_file, final_file), logger)
+    logger.info(f"Extracting the final binary to: {final_file}")
+    systemLine(f"{objcopy_path} -O binary -j .text -j .rodata {' '.join(objcopy_flags)} {elf_file} {final_file}", logger)
 
     logger.removeIndent()
 
@@ -442,10 +439,8 @@ def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logge
     generateFlagsFile(logger)
 
     # 2. Re-organize the linker flags
-    raw_link_flags = link_flags.split("-")
-    if len(link_flags) != 0:
-        raw_link_flags = map(lambda x : "-Wl,%s" % (x), raw_link_flags)
+    fixed_link_flags = "".join("-Wl," + x for x in link_flags.split("-")[1:])
 
     # 3. Compile together all of the file (and that's it)
-    logger.info("Compiling the *.c files, linking them together and creating: %s", elf_file)
-    systemLine("%s %s %s %s -o %s" % (compiler_path, compile_flags, " ".join(compilation_files), " ".join(raw_link_flags), elf_file), logger)
+    logger.info(f"Compiling the *.c files, linking them together and creating: {elf_file}")
+    systemLine(f"{compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", logger)

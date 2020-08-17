@@ -20,12 +20,12 @@ def startManage(sock_fd, logger):
     logger.info('Sending the Leak instruction')
     data = sendInstr(sock_fd, instrLeakAddr(), logger)
 
-    leaked_addr = struct.unpack("<Q", data)[0]
-    logger.info("The leaked kernel address is: %016x", leaked_addr)
+    leaked_addr = struct.unpack('<Q', data)[0]
+    logger.info('The leaked kernel address is: 0x%016x', leaked_addr)
 
     logger.info('Sending the memory read instruction')
     data = sendInstr(sock_fd, instrMemRead((leaked_addr - 0x1000) & (2 ** 64 - 1 - (0x1000 - 1)), 256), logger)
-    logger.info("The leaked data is:")
+    logger.info('The leaked data is:')
     logger.addIndent()
     logger.info(hexDump(data))
     logger.removeIndent()
@@ -34,8 +34,8 @@ def startManage(sock_fd, logger):
 # Prints the usage instructions (example)
 ##
 def printUsage(args):
-    print('Usage: %s <server_ip>' % (args[0]))
-    print('Exitting')
+    print(f'Usage: {args[0]} <server_ip>')
+    print('Exiting')
     exit(1)
 
 ##
@@ -44,14 +44,14 @@ def printUsage(args):
 def main(args):
     # Check the arguments
     if len(args) != 1 + 1:
-        print('Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 1))
+        print(f'Wrong amount of arguments, got {len(args) - 1}, expected 1')
         printUsage(args)
 
     # parse the args
     server_ip = args[1]
 
     # open the log
-    prompter = Prompter("Scout Manager", [("proxy_log.txt", "a", logging.DEBUG)])
+    prompter = Prompter('Scout Manager', [('proxy_log.txt', 'a', logging.DEBUG)])
 
     # connect to the server
     sock_fd = socket.create_connection((server_ip, SCOUT_PORT))
@@ -64,5 +64,5 @@ def main(args):
 
     prompter.info('Finished Successfully')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main(sys.argv)

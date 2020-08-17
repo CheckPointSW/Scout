@@ -6,7 +6,7 @@ import struct
 from elementals import Prompter
 
 # Assuming the script is executed from its directory
-sys.path.append("../utils")
+sys.path.append('../utils')
 
 from scout_compiler  import *
 from context_creator import *
@@ -76,7 +76,7 @@ def compileScoutLoader(logger):
 
     # 2. Additional flags: thumb mode (if in ARM), and mmap (in both cases)
     #  Note: If scout will also be in Thumb mode, add this flag too: flag_load_thumb
-    setScoutFlags([flag_loader] + [flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
+    setScoutFlags([flag_loader, flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
 
     # 3. Define the working directories
     setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
@@ -85,10 +85,10 @@ def compileScoutLoader(logger):
     compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
 
     # 5. Generate the list of compiled files
-    compilation_files = list(map(lambda f: os.path.join(SCOUT_DIR, f), scout_loader_deps + [scout_server_loader])) + loader_pic_files
+    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_loader_deps + [scout_server_loader]] + loader_pic_files
 
     # 6. Compile an embedded scout
-    logger.info("Starting to compile the scout loader")
+    logger.info('Starting to compile the scout loader')
     compileEmbeddedScout(compilation_files, compile_flags, link_flags, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN, logger)
 
     # 7. Place the PIC context in the resulting binary file
@@ -124,10 +124,10 @@ def compileScout(logger):
     compile_flags, link_flags = generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
 
     # 5. Generate the list of compiled files
-    compilation_files = list(map(lambda f: os.path.join(SCOUT_DIR, f), scout_all_files)) + project_files
+    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_all_files] + project_files
 
     # 6. Compile an embedded scout
-    logger.info("Starting to compile the embedded scout")
+    logger.info('Starting to compile the embedded scout')
     compileEmbeddedScout(compilation_files, compile_flags, link_flags, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
 
     # 7. Place the PIC context in the resulting binary file
@@ -148,8 +148,8 @@ def compileScout(logger):
 # Prints the usage instructions
 ##
 def printUsage(args):
-    print('Usage: %s' % (args[0].split(os.path.sep)[0]))
-    print('Exitting')
+    print(f'Usage: {args[0].split(os.path.sep)[0]}')
+    print('Exiting')
     exit(1)
 
 ##
@@ -158,7 +158,7 @@ def printUsage(args):
 def main(args):
     # Check the arguments (None for now)
     if len(args) != 1 + 0:
-        print('Wrong amount of arguments, got %d, expected %d' % (len(args) - 1, 0))
+        print(f'Wrong amount of arguments, got {len(args) - 1}, expected 0')
         printUsage(args)
 
     # Create the logger
@@ -169,7 +169,7 @@ def main(args):
     # Compile the full scout
     compileScout(prompter)
 
-    prompter.info("Finished Successfully")
+    prompter.info('Finished Successfully')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main(sys.argv)
