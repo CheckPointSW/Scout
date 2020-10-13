@@ -303,6 +303,9 @@ def generateCompilationFlags(compile_flags, link_flags, logger):
         else:
             basic_compile_flags += ['mbig-endian']
             basic_link_flags    += ['EB']
+        # Thumb
+        basic_compile_flags     += ['mthumb'] if (flag_arc_thumb in config_flags) else []
+
     # Endianness - Mips
     elif config_arc == flag_arc_mips:
         if config_endianness == flag_little_endian:
@@ -311,9 +314,6 @@ def generateCompilationFlags(compile_flags, link_flags, logger):
         else:
             basic_compile_flags += ['EB']
             basic_link_flags    += ['EB']
-
-        # Thumb
-        basic_compile_flags     += ['mthumb'] if (flag_arc_thumb in config_flags) else []
 
     # PC Environment
     if config_env == flag_env_pc:
