@@ -7,7 +7,7 @@ SCOUT_SRC=../../scout
 all: $(OUTFILE)
 
 $(OUTFILE):
-	python compile_scout.py
+	python3 compile_scout.py
 
 # Rebuild this project
 rebuild: cleanall all

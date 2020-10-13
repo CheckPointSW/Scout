@@ -80,12 +80,12 @@ def createContext(is_little_endian, is_32_bit):
         is_little_endian (bool): True iff the scout was compiled to little endian
         is_32_bit (bool): True iff the scout was compiled to 32 bits
     """
-    got = ''
+    got = b''
     # functions
     for func in full_got:
         got += struct.pack(("<" if is_little_endian else ">") + ("L" if is_32_bit else "Q"), func)
     # globals
-    got += '\x00' * globals_size
+    got += b'\x00' * globals_size
     # functions
     return got
 
