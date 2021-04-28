@@ -23,7 +23,6 @@ void     free(void * ptr);
 
 /* GLIBC Constants */
 #define SOCK_STREAM     1
-#define SOCK_DGRAM      2
 /* uCLIBC Constants */
 //#define SOCK_STREAM     2
 
@@ -69,14 +68,14 @@ void    close(sock_fd fd);
 /**  MMap Dependencies  **/
 /*************************/
 
-#define PROT_READ	0x1
-#define PROT_WRITE	0x2
-#define PROT_EXEC	0x4
+#define PROT_READ       0x01
+#define PROT_WRITE      0x02
+#define PROT_EXEC       0x04
 
 /* GLIBC Constants */
-#define MAP_PRIVATE	0x02
-#define MAP_FIXED	0x10
-#define MAP_ANONYMOUS	0x20
+#define MAP_PRIVATE     0x02
+#define MAP_FIXED       0x10
+#define MAP_ANONYMOUS   0x20
 /* uCLIBC Constants */
 //#define MAP_ANONYMOUS	0x800
 

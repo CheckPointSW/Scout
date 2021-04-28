@@ -28,8 +28,8 @@ typedef struct __pic_full_got
 
 typedef struct __pic_full_vars
 {
-    pic_vars_t       scout;
-    project_vars_t   project;
+    pic_vars_t      scout;
+    project_vars_t  project;
 } pic_full_vars_t;
 
 typedef struct __pic_context

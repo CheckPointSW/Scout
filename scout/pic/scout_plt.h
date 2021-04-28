@@ -27,9 +27,9 @@ typedef struct __pic_got
     addr_t      close;
 #ifdef SCOUT_MMAP
     /* MMap */
-    addr_t	mmap;
-    addr_t	mprotect;
-    addr_t	munmap;
+    addr_t      mmap;
+    addr_t      mprotect;
+    addr_t      munmap;
 #endif /* SCOUT_MMAP */
 } pic_got_t;
 

@@ -8,7 +8,7 @@ void flush_cache(uint8_t * buffer, uint32_t size)
     (void)buffer;
     (void)size;
 
-    /* Intel has no caches thAt we need to flush :) */
+    /* Intel has no caches that we need to flush :) */
 }
 
 #endif /* SCOUT_ARCH_INTEL */
