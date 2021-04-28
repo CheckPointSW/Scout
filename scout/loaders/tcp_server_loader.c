@@ -16,12 +16,12 @@ void main()
     uint8_t * receiveBuffer;
 
 	/* Try to reduce unneeded instructions, in we are tight in space */
-#if defined(SCOUT_RESTORE_FLOW)
+#if !defined(SCOUT_SLIM_SIZE)
     clientAddrSize = 0;
     clientSock = 0;
     serverSock = 0;
     receiveBuffer = NULL;
-#endif /* SCOUT_RESTORE_FLOW */
+#endif /* !SCOUT_SLIM_SIZE */
 
     /* Open the TCP server */
     status = open_tcp_server(&serverSock, SCOUT_LOADER_PORT);

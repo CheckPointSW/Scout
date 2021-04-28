@@ -2,7 +2,6 @@
 #include "scout/tcp_server.h"
 #include "scout/scout_api.h"
 #include "scout/pack.h"
-#include "scout/pic/scout_globals.h"
 
 #ifdef SCOUT_INSTRUCTIONS
 #ifndef SCOUT_DYNAMIC_BUFFERS

@@ -1,6 +1,6 @@
 #include "scout/pack.h"
 
-#ifndef SCOUT_LOADER /* We are short in space when compiling a loader */
+#ifndef SCOUT_SLIM_SIZE /* We are sometimes (loader) short in space */
 
 void pack_uint8(uint8_t ** buffer, uint8_t value)
 {
@@ -104,7 +104,7 @@ addr_t unpack_addr(uint8_t ** buffer)
 #endif /* SCOUT_BITS_32 */
 }
 
-#endif /* SCOUT_LOADER */
+#endif /* !SCOUT_SLIM_SIZE */
 
 #ifdef SCOUT_ISOLATED_ENV
 

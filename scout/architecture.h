@@ -104,4 +104,13 @@ typedef uint64_t addr_t;
     #define SCOUT_ISOLATED_ENV
 #endif
 
+/****************************************/
+/**  Loader (Tight memory constraints  **/
+/****************************************/
+
+/* Mainly used for readability */
+#if defined(SCOUT_LOADER) && defined(SCOUT_PIC_CODE)
+    #define SCOUT_SLIM_SIZE
+#endif
+
 #endif // __SCOUT__ARCHITECTURE__H__
