@@ -43,11 +43,11 @@ typedef struct __pic_context
 /***********/
 
 /**
- * API function that signals the "main" function of scout projects
+ * API function that signals the "main" function of PIC scout projects
  *
  * @author eyalit (22/03/2018)
  */
-void scout_main();
+void main();
 
 /*****************/
 /**  Functions  **/

@@ -25,7 +25,7 @@
 
 void _start()
 {
-    scout_main();
+    main();
 }
 
 void * get_live_address(const void * address)

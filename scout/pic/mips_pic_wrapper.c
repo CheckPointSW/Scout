@@ -12,7 +12,7 @@
 
 void __start()
 {
-    scout_main();
+    main();
 }
 
 addr_t get_pc()

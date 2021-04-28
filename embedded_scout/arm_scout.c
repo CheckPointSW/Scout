@@ -2,7 +2,7 @@
 #include "scout/tcp_server.h"
 #include "scout/pic/pic_wrapper.h"
 
-void scout_main()
+void main()
 {
     sock_fd serverSock;
     int32_t status;

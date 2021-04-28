@@ -6,7 +6,7 @@
 /* External API function */
 extern void flush_cache(uint8_t * buffer, uint32_t size);
 
-void scout_main()
+void main()
 {
     sock_fd clientSock;
     int32_t status;

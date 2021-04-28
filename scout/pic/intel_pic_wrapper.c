@@ -71,7 +71,7 @@ void * get_live_address(const void * address)
 
 void code_start()
 {
-    scout_main();
+    main();
 }
 
 #endif /* SCOUT_ARCH_INTEL */
