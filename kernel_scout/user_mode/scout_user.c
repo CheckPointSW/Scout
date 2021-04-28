@@ -21,7 +21,7 @@ void register_specific_instructions(void)
     /* No instruction to be registerred */
 }
 
-int32_t proxy_handle_instruction(void * ctx, scout_header_t * header, uint8_t * instruction)
+int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * instruction)
 {
 	int32_t status;
 	output_data_t * output = (output_data_t *)ctx;

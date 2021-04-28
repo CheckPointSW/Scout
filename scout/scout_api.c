@@ -43,6 +43,7 @@ int32_t parse_header(uint8_t * buffer, uint32_t length, scout_header_t * header,
     return STATUS_OK;
 }
 
+#ifndef SCOUT_PROXY
 int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer)
 {
     uint16_t index = 0;
@@ -77,6 +78,7 @@ int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer
     mark_status(ctx, status);
     return status;
 }
+#endif /* SCOUT_PROXY */
 
 uint16_t get_instruction_count(void)
 {

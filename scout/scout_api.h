@@ -79,7 +79,7 @@ typedef struct __scout_instruction
 int32_t parse_header(uint8_t * buffer, uint32_t length, scout_header_t * header, bool validateLen);
 
 /**
- * Verifies and Handles the given instruction
+ * Verifies and Handles the given instruction (could be a proxy)
  *
  * @author eyalit (07/03/2018)
  *
@@ -90,21 +90,6 @@ int32_t parse_header(uint8_t * buffer, uint32_t length, scout_header_t * header,
  * @return int32_t - success status
  */
 int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer);
-
-#ifdef SCOUT_PROXY
-/**
- * Passes the instruction to the real instruction handler
- *
- * @author eyalit (07/03/2018)
- *
- * @param ctx - general context
- * @param header - scout header as extracted from the buffer
- * @param buffer - instruction raw buffer
- *
- * @return int32_t - success status
- */
-int32_t proxy_handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer);
-#endif /* SCOUT_PROXY */
 
 /********************************/
 /**  Instruction Registration  **/

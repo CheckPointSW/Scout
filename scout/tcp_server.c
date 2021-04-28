@@ -216,11 +216,7 @@ int32_t start_server_loop(sock_fd serverSock)
             }
 
             /* Pass the instruction onward */
-#ifndef SCOUT_PROXY
             handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
-#else /* SCOUT_PROXY */
-            proxy_handle_instruction(&ctx, &header, &recvBuffer[SCOUT_HEADER_SIZE]);
-#endif /* ! SCOUT_PROXY */
 
             writeHead = outputHeader;
             pack_uint32( &writeHead, ctx.status );
