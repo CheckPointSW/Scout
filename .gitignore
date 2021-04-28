@@ -9,6 +9,10 @@ scout/loaders/*.o
 scout/loaders/*.S
 scout/pic/*.o
 scout/pic/*.S
+scout/Scout.vpj
+scout/Scout.vpw
+scout/Scout.vpwhist
+scout/Scout.vtg
 
 # Compiled embedded scout
 embedded_scout/*.o
