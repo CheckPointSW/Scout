@@ -75,8 +75,7 @@ def compileScoutLoader(logger):
     setTargetFlags(logger)
 
     # 2. Additional flags: thumb mode (if in ARM), and mmap (in both cases)
-    #  Note: If scout will also be in Thumb mode, add this flag too: flag_load_thumb
-    setScoutFlags([flag_loader, flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
+    setScoutFlags([flag_loader, flag_loader_server, flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
 
     # 3. Define the working directories
     setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)

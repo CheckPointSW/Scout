@@ -12,6 +12,7 @@ static uint8_t gSendBuffer[SCOUT_TCP_MAX_MESSAGE];
 #endif /* !SCOUT_DYNAMIC_BUFFERS */
 #endif /* SCOUT_INSTRUCTIONS */
 
+#if !defined(SCOUT_SLIM_SIZE) || defined(SCOUT_TCP_CLIENT)
 int32_t connect_to_tcp_server(sock_fd * clientSock, uint32_t ip, uint16_t port)
 {
     struct sockaddr_in addr;
@@ -43,7 +44,9 @@ int32_t connect_to_tcp_server(sock_fd * clientSock, uint32_t ip, uint16_t port)
     /* All was OK */
     return STATUS_OK;
 }
+#endif /* !SCOUT_SLIM_SIZE || SCOUT_TCP_CLIENT */
 
+#if !defined(SCOUT_SLIM_SIZE) || defined(SCOUT_TCP_SERVER)
 int32_t open_tcp_server(sock_fd * serverSock, uint16_t port)
 {
     struct sockaddr_in addr;
@@ -81,6 +84,7 @@ int32_t open_tcp_server(sock_fd * serverSock, uint16_t port)
     /* All was OK */
     return STATUS_OK;
 }
+#endif /* !SCOUT_SLIM_SIZE || SCOUT_TCP_SERVER */
 
 uint32_t full_net_recv(sock_fd sock, uint8_t * buffer, uint32_t length)
 {
@@ -98,6 +102,7 @@ uint32_t full_net_recv(sock_fd sock, uint8_t * buffer, uint32_t length)
     return received;
 }
 
+#if !defined(SCOUT_SLIM_SIZE) || defined(SCOUT_TCP_SEND) */
 uint32_t full_net_send(sock_fd sock, uint8_t * buffer, uint32_t length)
 {
     uint32_t sent = 0;
@@ -113,6 +118,7 @@ uint32_t full_net_send(sock_fd sock, uint8_t * buffer, uint32_t length)
     }
     return sent;
 }
+#endif /* !SCOUT_SLIM_SIZE || SCOUT_TCP_SEND */
 
 #ifdef SCOUT_INSTRUCTIONS
 

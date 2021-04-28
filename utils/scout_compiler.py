@@ -65,6 +65,9 @@ flag_proxy          = 'SCOUT_PROXY'
 flag_mmap           = 'SCOUT_MMAP'
 flag_load_thumb     = 'SCOUT_LOADING_THUMB_CODE'
 flag_loader         = 'SCOUT_LOADER'
+flag_loader_client  = 'SCOUT_TCP_CLIENT'
+flag_loader_server  = 'SCOUT_TCP_SERVER'
+flag_loader_transmit= 'SCOUT_TCP_SEND'
 
 # Using an enum to support feature extensions
 ARC_INTEL = 'intel'
