@@ -12,7 +12,7 @@
 
 #include "scout/scout.h" // Depdendecy cycle in PIC mode forces us to include this file only at this line
 
-#ifdef SCOUT_PC_ENV
+#ifndef SCOUT_ISOLATED_ENV
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 typedef int sock_fd;
-#endif /* SCOUT_PC_ENV */
+#endif /* !SCOUT_ISOLATED_ENV */
 
 /***************/
 /**  Structs  **/

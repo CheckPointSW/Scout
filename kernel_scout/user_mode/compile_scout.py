@@ -33,7 +33,7 @@ def setTargetFlags(logger):
     setScoutArc(TARGET_ARCH, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS, logger=logger)
 
     # 2. Set the environment
-    setScoutEnv(is_pc=True)
+    setScoutEnv(is_executable=True)
 
     # 3. Set the permission mode
     setScoutMode(is_user=True)
@@ -62,7 +62,7 @@ def compileScout(logger):
 
     # 6. Compile the PC (user mode proxy) scout
     logger.info('Starting to compile the user scout')
-    compilePCScout(compilation_files, compile_flags, link_flags, USER_SCOUT_BIN, logger)
+    compileExecutableScout(compilation_files, compile_flags, link_flags, USER_SCOUT_BIN, logger)
 
     # Finished :)
     return

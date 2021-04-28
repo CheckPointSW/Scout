@@ -62,7 +62,7 @@ def setTargetFlags(logger):
     setScoutArc(TARGET_ARCH, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS, logger=logger)
 
     # 2. Set the environment
-    setScoutEnv(is_pc=False)
+    setScoutEnv(is_executable=False)
 
     # 3. Set the permission mode
     setScoutMode(is_user=False)
@@ -89,7 +89,7 @@ def compileScoutLoader(logger):
 
     # 6. Compile an embedded scout
     logger.info('Starting to compile the scout loader')
-    compileEmbeddedScout(compilation_files, compile_flags, link_flags, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN, logger)
+    compilePICScout(compilation_files, compile_flags, link_flags, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN, logger)
 
     # 7. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
@@ -126,9 +126,9 @@ def compileScout(logger):
     # 5. Generate the list of compiled files
     compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_all_files] + project_files
 
-    # 6. Compile an embedded scout
-    logger.info('Starting to compile the embedded scout')
-    compileEmbeddedScout(compilation_files, compile_flags, link_flags, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
+    # 6. Compile a PIC scout
+    logger.info('Starting to compile the PIC scout')
+    compilePICScout(compilation_files, compile_flags, link_flags, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
 
     # 7. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,

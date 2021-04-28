@@ -121,7 +121,7 @@ uint64_t unpack_uint64(uint8_t ** buffer);
  */
 addr_t unpack_addr(uint8_t ** buffer);
 
-#ifdef SCOUT_EMBEDDED_ENV
+#ifdef SCOUT_ISOLATED_ENV
 
 /**
  * Converts the given value from host order to network order
@@ -189,6 +189,6 @@ uint32_t ntohl(uint32_t value);
  */
 uint64_t ntohq(uint64_t value);
 
-#endif /* SCOUT_EMBEDDED_ENV */
+#endif /* SCOUT_ISOLATED_ENV */
 
 #endif // __SCOUT__PACK__H__

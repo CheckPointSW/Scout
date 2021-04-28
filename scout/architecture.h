@@ -3,11 +3,11 @@
 
 #include "flags.h"
 
-#if defined(SCOUT_MODE_KERNEL) && defined(SCOUT_PC_ENV)
+#if defined(SCOUT_MODE_KERNEL) && !defined(SCOUT_PIC_CODE)
 #include <linux/types.h>
 #else
 #include <stdint.h>
-#endif /* SCOUT_MODE_KERNEL && SCOUT_PC_ENV */
+#endif /* SCOUT_MODE_KERNEL && !SCOUT_PIC_CODE */
 
 /******************/
 /**  Endianness  **/
@@ -76,9 +76,9 @@ typedef uint64_t addr_t;
     #define SCOUT_ARCH_INTEL
 #endif
 
-/******************/
-/**  User Level  **/
-/******************/
+/******************************/
+/**  User Mode / Privileges  **/
+/******************************/
 
 /* Sanity check */
 #if defined(SCOUT_MODE_USER) && defined(SCOUT_MODE_KERNEL)
@@ -90,32 +90,18 @@ typedef uint64_t addr_t;
     #define SCOUT_MODE_USER
 #endif
 
-/****************/
-/**  Embedded  **/
-/****************/
-
-/* Sanity check */
-#if defined(SCOUT_EMBEDDED_ENV) && defined(SCOUT_PC_ENV)
-    #error "Both embedded environment AND PC environment are defined!"
+/* Mainly used for readability */
+#if defined(SCOUT_MODE_KERNEL)
+	#define SCOUT_HIGH_PRIVILEGES
 #endif
 
-/* Default values */
-#if !defined(SCOUT_EMBEDDED_ENV) && !defined(SCOUT_PC_ENV)
-    #define SCOUT_PC_ENV
-#endif
+/***************************************/
+/**  Excutable / Injected (PIC) Code  **/
+/***************************************/
 
-/****************/
-/**  PIC Code  **/
-/****************/
-
-/* Sanity check */
-#if defined(SCOUT_PIC_CODE) && !defined(SCOUT_EMBEDDED_ENV)
-    #error "PIC code can only be used in an embedded environment!"
-#endif
-
-/* Sanity check */
-#if !defined(SCOUT_PIC_CODE) && defined(SCOUT_EMBEDDED_ENV)
-    #error "For now, embedded environment must be used only with PIC code"
+/* Mainly used for readability */
+#if defined(SCOUT_PIC_CODE)
+    #define SCOUT_ISOLATED_ENV
 #endif
 
 #endif // __SCOUT__ARCHITECTURE__H__

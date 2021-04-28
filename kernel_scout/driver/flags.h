@@ -8,7 +8,6 @@
 #define SCOUT_ARCH_INTEL
 #define SCOUT_LITTLE_ENDIAN
 #define SCOUT_MODE_KERNEL
-#define SCOUT_PC_ENV
 #define SCOUT_INSTRUCTIONS
 
 #endif /* __KERNEL__SCOUT__FLAGS__H__ */

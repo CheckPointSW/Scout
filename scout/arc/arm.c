@@ -1,11 +1,10 @@
 #include "scout/arc/arm.h"
-#include "scout/pic/pic_wrapper.h"
 
 #ifdef SCOUT_ARCH_ARM
 
 void flush_cache(uint8_t * buffer, uint32_t size)
 {
-#if defined(SCOUT_MODE_KERNEL) || defined(SCOUT_EMBEDDED_ENV)
+#if defined(SCOUT_HIGH_PRIVILEGES)
     asm("    MOV             R2, R0                                                       ");
     asm("    ADR             R0, flush_cache_inner                                        ");
     asm("    BX              R0                                                           ");

@@ -106,7 +106,7 @@ addr_t unpack_addr(uint8_t ** buffer)
 
 #endif /* SCOUT_LOADER */
 
-#ifdef SCOUT_EMBEDDED_ENV
+#ifdef SCOUT_ISOLATED_ENV
 
 uint16_t htons(uint16_t value)
 {
@@ -170,4 +170,4 @@ uint64_t ntohq(uint64_t value)
 #endif /* SCOUT_LITTLE_ENDIAN */
 }
 
-#endif /* SCOUT_EMBEDDED_ENV */
+#endif /* SCOUT_ISOLATED_ENV */

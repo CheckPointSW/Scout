@@ -3,9 +3,6 @@
 #ifdef SCOUT_LOADER
 
 #include "scout/scout.h"
-#ifdef SCOUT_PIC_CODE
-#include "scout/pic/pic_wrapper.h"
-#endif /* SCOUT_PIC_CODE */
 
 /***************/
 /**  Defines  **/

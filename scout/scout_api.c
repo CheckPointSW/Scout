@@ -110,11 +110,11 @@ void register_instruction(uint16_t instrID, uint32_t minLength, uint32_t maxLeng
 
 void register_basic_instructions(void)
 {
-#ifdef SCOUT_EMBEDDED_ENV
-    /* Prepare the globals (won't be set on embedded environments */
+#ifdef SCOUT_PIC_CODE
+    /* Prepare the globals (won't be set without an executable's loader) */
     *GLOBAL(pNumInstructions) = 0;
     memset(GLOBAL(Instructions), 0, SCOUT_MAX_INSTRS * sizeof(scout_instruction_t));
-#endif /* SCOUT_EMBEDDED_ENV */
+#endif /* SCOUT_PIC_CODE */
 
     /* Can now quietly register the basic instructions */
     register_instruction(SCOUT_INST_NOP,       INSTR_NOP_MIN_SIZE,       INSTR_NOP_MAX_SIZE,       INSTR_NOP_HANDLER);

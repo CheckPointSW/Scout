@@ -4,6 +4,8 @@
 #include "flags.h"                /* Project defined, must come first */
 #include "scout/architecture.h"   /* Important architecture defines */
 
+#ifdef SCOUT_ISOLATED_ENV
+
 /*************************/
 /**  LibC Dependencies  **/
 /*************************/
@@ -82,5 +84,7 @@ void    close(sock_fd fd);
 void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset);
 int    mprotect(void * addr, size_t len, int prot);
 int    munmap(void * addr, size_t length);
+
+#endif /* SCOUT_ISOLATED_ENV */
 
 #endif // __SCOUT__EXTERNAL__DEPS__H__

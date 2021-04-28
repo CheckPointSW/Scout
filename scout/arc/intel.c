@@ -1,5 +1,4 @@
 #include "scout/arc/intel.h"
-#include "scout/pic/pic_wrapper.h"
 
 #ifdef SCOUT_ARCH_INTEL
 

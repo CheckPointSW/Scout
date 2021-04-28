@@ -1,11 +1,12 @@
 Compilation Modes
 =================
-Scout is a configurable debugger, that could bedeployed in several different environments:
+Scout is a configurable debugger, that could be deployed in several different environments:
 
 * Linux User-Mode Process - "User Mode"
 * Linux Kernel Driver - "Kernel Mode"
 * Linux In-Process Debugging - "User Mode" + "PIC Mode"
-* Embedded "In-Process" Debugging - "PIC Mode" + "Embedded Mode"
+* Embedded "In-Process" Debugging (low privileges) - "PIC Mode" + "User Mode"
+* Embedded "In-Process" Debugging (high privileges) - "PIC Mode" + "Kernel Mode"
 
 To decide what will be the suitable compilation mode / architecture flags, one should check the following parameters.
 Each of the defined parameters is a C MACRO (define) that controls the behavior (and compilation) of the resulting binary.
@@ -38,46 +39,33 @@ If none are defined the base library will define "SCOUT_ARCH_INTEL" on it's own.
 **Additional Flags:**
 * SCOUT_ARM_THUMB - Scout will be executed on an ARM cpu in Thumb mode. Can only be used together with the "SCOUT_ARCH_ARM" flag.
 
-The flags is needed only in PIC mode, in which we use inline assembly.
+The flags are needed only in PIC mode, in which we use inline assembly.
 
 Target Permission Level
 -----------------------
-* SCOUT_MODE_USER - Scout is executed in User-Mode
-* SCOUT_MODE_KERNEL - Scout is executed in Kernel-Mode
+* SCOUT_MODE_USER - Scout is executed in User-Mode (& low CPU privileges)
+* SCOUT_MODE_KERNEL - Scout is executed in Kernel-Mode (& high CPU privileges)
 
 Only one of above flags can be defined.
 If none are defined the base library will define "SCOUT_MODE_USER" on it's own.
 
-**Note:** These flags are used only in a Linux PC Environment, and are not used in an Embedded Environment.
-
-Target Loading Environment
---------------------------
-* SCOUT_PC_ENV - Scout is executed as a standard process (user) or driver (kernel) on a Linux machine
-* SCOUT_EMBEDDED_ENV - Scout is injected to the address space of a given executable
-
-Only one of above flags can be defined.
-If none are defined the base library will define "SCOUT_PC_ENV" on it's own.
-
-**Note:** SCOUT_EMBEDDED_ENV has many use cases, including:
-1. Injecting a debugger into a debuggee Linux process
-2. Injecting a debugger into a debuggee firmware (if the executable's API matches the basic POSIX based API of Scout)
-
-**Note:** At the current moment, "SCOUT_EMBEDDED_ENV" must be used with "SCOUT_PIC_CODE", although in the future a linker script could help an embedded scout access external functions without the PIC context.
+"SCOUT_MODE_KERNEL" will also be the right choice for an RTOS (Real-time OS) in which every task / our task has high privileges. The flag will lead to the definition of "SCOUT_HIGH_PRIVILEGES" by the compilation environment.
 
 Position Independent Mode - SCOUT_PIC_CODE
 ------------------------------------------
 Scout will be compiled for full Position Independent Code (PIC) mode. Any access to an external function / global variable will pass through a unique "Context" object. Read the section about "PIC Compilation" for more information.
-**Note:** Can only be used with "SCOUT_EMBEDDED_ENV".
+
+"SCOUT_PIC_CODE" will lead to the definition of "SCOUT_ISOLATED_ENV" by the compilation environment, because a PIC blob will always be isolated from the environment, and won't have the luxory of a proper executable loader such as "ld.so".
 
 Loader Flags
 ------------
 * SCOUT_LOADER - We are now compiling a loader (that might be using it's own pic plt / globals).
 * SCOUT_LOADING_THUMB_CODE - The loader will load a Scout that was compiled to be executed on an ARM cpu in Thumb mode.
-* SCOUT_RESTORE_FLOW - The default loaders (```tcp_client_server.c```, ```tcp_loader_server.c```) will clean-up after themselves if the loaded scout will finish his endless loop.
+* SCOUT_RESTORE_FLOW - The default loaders (```tcp_client_server.c```, ```tcp_loader_server.c```) will clean-up after themselves if the loaded scout will finish the endless loop.
 
 Additional Flags:
 -----------------
 * SCOUT_INSTRUCTIONS - Scout is going to use the instructions api (using the TCP server for instance)
-* SCOUT_DYNAMIC_BUFFERS - Scout will dynamically malloc() buffers to be used by the tcp server. Otherwise static buffers will be used.
+* SCOUT_DYNAMIC_BUFFERS - Scout will dynamically ```malloc()``` buffers to be used by the tcp server. Otherwise static buffers will be used.
 * SCOUT_PROXY - Scout is going to act as a proxy (user scout passing instructions to a kernel driver for instance)
-* SCOUT_MMAP - Should scout's loaders use mmap() and mprotect() when loading (if defined) or should they simply use malloc (if undefined)
+* SCOUT_MMAP - Should scout's loaders use ```mmap()``` and ```mprotect()``` when loading (if defined) or should they simply use ```malloc()``` (if undefined)

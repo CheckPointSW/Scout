@@ -31,13 +31,13 @@ intel_objcopy_path  = 'objcopy'
 intel_objcopy_flags = []
 
 # Compile & Link flags
-basic_compile_flags             = ['fno-builtin', 'Wno-int-to-pointer-cast', 'Wno-pointer-to-int-cast']
-basic_pc_compile_flags          = ['O2']
-basic_embedded_compile_flags    = ['Os', 'nostdlib', 'fno-toplevel-reorder']
-intel_embedded_compile_flags    = []
-arm_embedded_compile_flags      = ['fno-jump-tables', 'mapcs-frame']
-mips_embedded_compile_flags     = ['fno-jump-tables', 'mno-shared', 'mplt']
-basic_link_flags                = []
+common_compile_flags            = ['fno-builtin', 'Wno-int-to-pointer-cast', 'Wno-pointer-to-int-cast']
+common_executable_compile_flags = ['O2']
+common_pic_compile_flags        = ['Os', 'nostdlib', 'fno-toplevel-reorder']
+intel_pic_compile_flags         = []
+arm_pic_compile_flags           = ['fno-jump-tables', 'mapcs-frame']
+mips_pic_compile_flags          = ['fno-jump-tables', 'mno-shared', 'mplt']
+common_link_flags               = []
 
 #############################
 ##  Static Configurations  ##
@@ -57,8 +57,6 @@ flag_arc_intel      = 'SCOUT_ARCH_INTEL'
 flag_arc_thumb      = 'SCOUT_ARM_THUMB'
 flag_mode_user      = 'SCOUT_MODE_USER'
 flag_mode_kernel    = 'SCOUT_MODE_KERNEL'
-flag_env_embedded   = 'SCOUT_EMBEDDED_ENV'
-flag_env_pc         = 'SCOUT_PC_ENV'
 flag_pic_code       = 'SCOUT_PIC_CODE'
 flag_instructions   = 'SCOUT_INSTRUCTIONS'
 flag_restore_flow   = 'SCOUT_RESTORE_FLOW'
@@ -83,6 +81,13 @@ arc_configs = {
                 ARC_ARM:    flag_arc_arm,
                 ARC_MIPS:   flag_arc_mips,
               }
+              
+arc_pic_flags = \
+              {
+                ARC_INTEL:  intel_pic_compile_flags,
+                ARC_ARM:    arm_pic_compile_flags,
+                ARC_MIPS:   mips_pic_compile_flags,
+              }
 
 # scout file list
 scout_arc_files     = ['arc/arm.c', 'arc/mips.c', 'arc/intel.c']
@@ -106,7 +111,6 @@ objcopy_flags       = None
 config_bitness      = None
 config_endianness   = None
 config_arc          = None
-config_env          = None
 config_mode         = None
 config_pic          = None
 config_flags        = []
@@ -144,16 +148,15 @@ def setScoutArc(arc, is_32_bits, is_little_endian, logger, is_native=False):
     config_endianness   = flag_little_endian    if is_little_endian else flag_big_endian
     config_arc          = arc_configs[arc]
 
-def setScoutEnv(is_pc):
+def setScoutEnv(is_executable):
     """Sets the target's environment flags
 
     Args:
-        is_pc (bool): True iff the environment is a standard PC, otherwise it will be an embedded environment
+        is_executable (bool): True iff the environment is a standard executable, otherwise it will be a PIC environment
     """
-    global config_env, config_pic
+    global config_pic
 
-    config_env = flag_env_pc   if is_pc else flag_env_embedded
-    config_pic = flag_pic_code if not is_pc else ''
+    config_pic = flag_pic_code if not is_executable else ''
 
 def setScoutMode(is_user):
     """Sets the target's permission level
@@ -228,10 +231,6 @@ def verifyScoutFlags(logger):
         logger.error("Missing Scout flag: unknown architecture")
         return False
 
-    if config_env is None:
-        logger.error("Missing Scout flag: unknown environment")
-        return False
-
     if config_mode is None:
         logger.error("Missing Scout flag: unknown permission mode")
         return False
@@ -241,7 +240,7 @@ def verifyScoutFlags(logger):
         return False
 
     # Reaching here means that all was OK
-    config_flags  += [config_bitness, config_endianness, config_arc, config_env, config_mode]
+    config_flags  += [config_bitness, config_endianness, config_arc, config_mode]
     if len(config_pic) > 0:
         config_flags += [config_pic]
     return True
@@ -279,72 +278,59 @@ def generateFlagsFile(logger):
     # can close the file
     fd.close()
 
-def generateCompilationFlags(compile_flags, link_flags, logger):
+def generateCompilationFlags(user_compile_flags, user_link_flags, logger):
     """Generates the compilation flags that match the configurations flags
 
     Args:
-        copmile_flags (list): list of compiler flags (without the '-' prefix)
-        link_flags (list) list of linker flags (without the '-' prefix)
+        user_copmile_flags (list): list of compiler flags (without the '-' prefix)
+        user_link_flags (list) list of linker flags (without the '-' prefix)
         logger (logger): (elementals) logger
 
     Return Value:
         (compiler flags string, linker flags string)
     """
-    global basic_compile_flags, basic_link_flags
+    compile_flags  = common_compile_flags
+    link_flags     = common_link_flags
 
-    orig_compile_flags  = [] + basic_compile_flags
-    orig_link_flags     = [] + basic_link_flags
-
-    # Endianness - Arm
+    # ARM - Misc (Thumb) & Endianness
     if config_arc == flag_arc_arm:
-        if config_endianness == flag_little_endian:
-            basic_compile_flags += ['mlittle-endian']
-            basic_link_flags    += ['EL']
-        else:
-            basic_compile_flags += ['mbig-endian']
-            basic_link_flags    += ['EB']
         # Thumb
-        basic_compile_flags     += ['mthumb'] if (flag_arc_thumb in config_flags) else []
+        compile_flags     += ['mthumb'] if (flag_arc_thumb in config_flags) else []
+        # Endianness
+        if config_endianness == flag_little_endian:
+            compile_flags += ['mlittle-endian']
+            link_flags    += ['EL']
+        else:
+            compile_flags += ['mbig-endian']
+            link_flags    += ['EB']
 
-    # Endianness - Mips
+    # Mips - Endianness
     elif config_arc == flag_arc_mips:
         if config_endianness == flag_little_endian:
-            basic_compile_flags += ['EL']
-            basic_link_flags    += ['EL']
+            compile_flags += ['EL']
+            link_flags    += ['EL']
         else:
-            basic_compile_flags += ['EB']
-            basic_link_flags    += ['EB']
+            compile_flags += ['EB']
+            link_flags    += ['EB']
+            
+    # Intel - Misc (Bitness)
+    elif config_arc == flag_arc_intel:
+        if config_bitness == flag_32_bit:
+            compile_flags += ['m32']
+            link_flags    += ['melf_i386']
 
-    # PC Environment
-    if config_env == flag_env_pc:
-        basic_compile_flags += basic_pc_compile_flags
+    # Executable Environment
+    if config_pic != flag_pic_code:
+        compile_flags += common_executable_compile_flags
 
-    # Embedded Environment
+    # PIC Environment
     else:
-        basic_compile_flags += basic_embedded_compile_flags
-        # Intel Arc
-        if config_arc == flag_arc_intel:
-            basic_compile_flags += intel_embedded_compile_flags
-        # Arm Arc
-        elif config_arc == flag_arc_arm:
-            basic_compile_flags += arm_embedded_compile_flags
-        # Mips Arc
-        else:
-            basic_compile_flags += mips_embedded_compile_flags
-
-    # Robustness (bitness) flag
-    if config_bitness == flag_32_bit:
-        if config_arc == flag_arc_intel:
-            basic_compile_flags += ['m32']
-            basic_link_flags    += ['melf_i386']
+        compile_flags += common_pic_compile_flags
+        compile_flags += arc_pic_flags[config_arc]
 
     # Final Compile & Link flags
-    compile_flags = ' '.join(['-' + x for x in basic_compile_flags + compile_flags + ['I' + y for y in include_dirs]])
-    link_flags    = ' '.join(['-' + x for x in basic_link_flags + link_flags])
-
-    # Restore the global flags
-    basic_compile_flags  = [] + orig_compile_flags
-    basic_link_flags     = [] + orig_link_flags
+    compile_flags = ' '.join(['-' + x for x in compile_flags + user_compile_flags + ['I' + y for y in include_dirs]])
+    link_flags    = ' '.join(['-' + x for x in link_flags + user_link_flags])
 
     return compile_flags, link_flags
 
@@ -358,8 +344,8 @@ def systemLine(line, logger):
     logger.debug(line)
     os.system(line)
 
-def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file, final_file, logger):
-    """Compiles an embedded "Scout" project
+def compilePICScout(compilation_files, compile_flags, link_flags, elf_file, final_file, logger):
+    """Compiles a Position-Independent (PIC) "Scout" project
 
     Args:
         compilation_files (list): list of file paths for all code (*.c) files
@@ -372,8 +358,8 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
     logger.addIndent()
 
     # 0. Sanity check
-    if config_env != flag_env_embedded:
-        logger.error("Compiling an Embedded scout with PC environment flag. Did you mean: compilePCScout() ?")
+    if config_pic != flag_pic_code:
+        logger.error("Compiling a PIC scout without the PIC-CODE Environment flag. Did you mean: compileExecutableScout() ?")
         logger.removeIndent()
         return
 
@@ -420,8 +406,8 @@ def compileEmbeddedScout(compilation_files, compile_flags, link_flags, elf_file,
 
     logger.removeIndent()
 
-def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logger):
-    """Compiles a regular (PC) "Scout" project
+def compileExecutableScout(compilation_files, compile_flags, link_flags, elf_file, logger):
+    """Compiles a regular executable "Scout" project
 
     Args:
         compilation_files (list): list of file paths for all code (*.c) files
@@ -431,8 +417,8 @@ def compilePCScout(compilation_files, compile_flags, link_flags, elf_file, logge
         logger (logger): (elementals) logger
     """
     # 0. Sanity check
-    if config_env != flag_env_pc:
-        logger.error("Compiling a PC scout with EMBEDDED environment flag. Did you mean: compileEmbeddedScout() ?")
+    if config_pic == flag_pic_code:
+        logger.error("Compiling an Executable scout with PIC-CODE environment flag. Did you mean: compilePICScout() ?")
         return
 
     # 1. Auto-Generate the flags.h file

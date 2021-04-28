@@ -40,7 +40,6 @@ pic_context_t * get_context()
 #endif /* SCOUT_BITS_32 */
 }
 
-#ifdef SCOUT_INSTRUCTIONS
 void * get_live_address(const void * address)
 {
 #ifdef SCOUT_BITS_32
@@ -67,7 +66,6 @@ void * get_live_address(const void * address)
     asm("pop    %rbx                 ");
 #endif /* SCOUT_BITS_32 */
 }
-#endif /* SCOUT_INSTRUCTIONS */
 
 void code_start()
 {
