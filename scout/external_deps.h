@@ -23,17 +23,27 @@ void     free(void * ptr);
 /**  Socket Dependencies  **/
 /***************************/
 
-/* GLIBC Constants */
-#define SOCK_STREAM     1
-/* uCLIBC Constants */
-//#define SOCK_STREAM     2
+#if defined(SCOUT_HOST_GLIBC)
 
+#define SOCK_STREAM     1
 #define AF_INET         2
 
 #define IPPROTO_TCP     6
 #define IPPROTO_UDP     17
 
 #define INADDR_ANY      0
+
+#elif defined(SCOUT_HOST_UCLIBC)
+
+#define SOCK_STREAM     2
+#define AF_INET         2
+
+#define IPPROTO_TCP     6
+#define IPPROTO_UDP     17
+
+#define INADDR_ANY      0
+
+#endif
 
 struct in_addr
 {
@@ -69,17 +79,28 @@ void    close(sock_fd fd);
 /*************************/
 /**  MMap Dependencies  **/
 /*************************/
+#if defined(SCOUT_HOST_GLIBC)
 
 #define PROT_READ       0x01
 #define PROT_WRITE      0x02
 #define PROT_EXEC       0x04
 
-/* GLIBC Constants */
+
 #define MAP_PRIVATE     0x02
 #define MAP_FIXED       0x10
 #define MAP_ANONYMOUS   0x20
-/* uCLIBC Constants */
-//#define MAP_ANONYMOUS	0x800
+
+#elif defined(SCOUT_HOST_UCLIBC)
+
+#define PROT_READ       0x01
+#define PROT_WRITE      0x02
+#define PROT_EXEC       0x04
+
+#define MAP_PRIVATE     0x02
+#define MAP_FIXED       0x10
+#define MAP_ANONYMOUS	0x800
+
+#endif
 
 void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset);
 int    mprotect(void * addr, size_t len, int prot);

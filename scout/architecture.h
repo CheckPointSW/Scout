@@ -104,6 +104,23 @@ typedef uint64_t addr_t;
     #define SCOUT_ISOLATED_ENV
 #endif
 
+/*********************************************/
+/**  LibC versions used by host executable  **/
+/*********************************************/
+
+#ifdef SCOUT_ISOLATED_ENV
+
+#if defined(SCOUT_HOST_GLIBC) && !defined(SCOUT_HOST_UCLIBC)
+    #error "The host process could only use one LibC implementation: glibc or uClibc!"
+#endif
+
+
+#if !defined(SCOUT_HOST_GLIBC) && !defined(SCOUT_HOST_UCLIBC)
+    #define SCOUT_HOST_GLIBC
+#endif
+
+#endif /* SCOUT_ISOLATED_ENV */
+
 /****************************************/
 /**  Loader (Tight memory constraints  **/
 /****************************************/

@@ -57,6 +57,12 @@ Scout will be compiled for full Position Independent Code (PIC) mode. Any access
 
 "SCOUT_PIC_CODE" will lead to the definition of "SCOUT_ISOLATED_ENV" by the compilation environment, because a PIC blob will always be isolated from the environment, and won't have the luxory of a proper executable loader such as "ld.so".
 
+Host LibC Implementation
+------------------------
+When injecting our (PIC) code into a host binary, we should make sure to use the proper constants for the matching standard library implementation that is used by the respective binary:
+* SCOUT_HOST_GLIBC - The used library is Glibc
+* SCOUT_HOST_UCLIBC - The used library is uClibc (or uClibc-NG)
+
 Loader Flags
 ------------
 * SCOUT_LOADER - We are now compiling a loader (that might be using it's own pic plt / globals).
