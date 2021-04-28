@@ -1,7 +1,6 @@
 #include "scout/loaders/tcp_client_loader.h"
 #include "scout/tcp_server.h"
 #include "scout/pack.h"
-#include "scout/pic/pic_wrapper.h"
 
 /* External API function */
 extern void flush_cache(uint8_t * buffer, uint32_t size);
@@ -13,10 +12,11 @@ void main()
     uint32_t size;
     uint8_t * receiveBuffer;
 
-#ifdef SCOUT_RESTORE_FLOW
+	/* Try to reduce unneeded instructions, in we are tight in space */
+#if defined(SCOUT_RESTORE_FLOW) && defined(SCOUT_PIC_CODE)
     clientSock = 0;
     receiveBuffer = NULL;
-#endif /* SCOUT_RESTORE_FLOW */
+#endif /* SCOUT_RESTORE_FLOW && PIC_CODE */
 
     /* Open the TCP server */
     status = connect_to_tcp_server(&clientSock, SCOUT_SERVER_IP, SCOUT_LOADER_PORT);
@@ -58,11 +58,7 @@ void main()
 #endif /* SCOUT_MMAP */
 
     /* Jump into the buffer */
-#if defined(SCOUT_LOADING_THUMB_CODE)
-    ((void (*)(void))receiveBuffer + 1)();
-#else
-    ((void (*)(void))receiveBuffer)();
-#endif /* SCOUT_LOADING_THUMB_CODE */
+    INVOKE_PAYLOAD(receiveBuffer);
 
 free_resources:
 #ifdef SCOUT_RESTORE_FLOW
