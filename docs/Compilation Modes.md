@@ -63,7 +63,8 @@ Loader Flags
 * SCOUT_LOADING_THUMB_CODE - The loader will load a Scout that was compiled to be executed on an ARM cpu in Thumb mode.
 * SCOUT_RESTORE_FLOW - The default loaders (```tcp_client_server.c```, ```tcp_loader_server.c```) will clean-up after themselves if the loaded scout will finish the endless loop.
 
-If loader will be compiled to be Position Independent (PIC), which is probably the most common use case, it will als define a new flag of "SCOUT_SLIM_SIZE", to help shrink the size of the binary (to server as an effective shellcode. Under this definition the TCP server would expect the following flags (if needed):
+If the loader will be compiled to be Position Independent (PIC), which is probably the most common use case, it will also define a new flag of "SCOUT_SLIM_SIZE", to help shrink the size of the binary (to serve as an effective shellcode.
+Under this definition the TCP server would expect the following flags (if needed):
 * SCOUT_TCP_CLIENT - There is a need to include the feature of a TCP client
 * SCOUT_TCP_SERVER - There is a need to include the feature of a TCP server
 * SCOUT_TCP_SEND - There is a need to include the ability to reliably send TCP messages
