@@ -59,6 +59,14 @@ typedef struct __scout_instruction
 #define SCOUT_HEADER_SIZE   (sizeof(uint16_t) + sizeof(uint32_t))
 #define SCOUT_MAX_INSTRS    (10)
 
+#ifdef SCOUT_PIC_CODE
+#define GET_HANDLER(_X_)    ((instrHandler)get_live_address((_X_)->handler))
+#else
+#define GET_HANDLER(_X_)    ((_X_)->handler)
+#endif /* SCOUT_PIC_CODE */
+
+#define INVOKE_HANDLER(_X_, _C_, _B_, _L_) GET_HANDLER(_X_)(_C_, _B_, _L_)
+
 #include "scout/scout.h" // Now we can safely include this file, even in PIC mode
 
 /******************************/

@@ -67,11 +67,7 @@ int32_t handle_instruction(void * ctx, scout_header_t * header, uint8_t * buffer
         }
 
         /* Can now handle the instruction */
-#ifdef SCOUT_PIC_CODE
-        status = ((instrHandler)get_live_address(instr->handler))(ctx, buffer, header->length);
-#else
-        status = instr->handler(ctx, buffer, header->length);
-#endif /* SCOUT_PIC_CODE */
+        status = INVOKE_HANDLER(instr, ctx, buffer, header->length);
         break;
     }
 
