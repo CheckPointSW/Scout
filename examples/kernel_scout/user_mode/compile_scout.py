@@ -16,8 +16,6 @@ SCOUT_DIR           = '../../../src/scout'
 USER_SCOUT_BIN      = 'scout_user'
 
 TARGET_ARCH         = ARC_INTEL
-TARGET_ENDIANNESS   = True  # is little endian ?
-TARGET_BITNESS      = False # is 32 bits ?
 
 # project files list
 project_files       = ['scout_user.c']
@@ -26,42 +24,39 @@ project_files       = ['scout_user.c']
 # Sets the bsaic architecture flags for our target
 ##
 def setTargetFlags(logger):
+    # 0. Create the compiler instance
+    compiler = scoutCompiler(logger, is_pic=False)
+    
     # 1. Set the architecture
-    setScoutArc(TARGET_ARCH, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS, logger=logger)
+    compiler.setArc(TARGET_ARCH)
 
-    # 2. Set the environment
-    setScoutEnv(is_executable=True)
-
-    # 3. Set the permission mode
-    setScoutMode(is_user=True)
+    # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
+    compiler.setScoutMode(is_user=True)
+    
+    # 3. Set the working directories
+    compiler.setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
+    
+    return compiler
 
 ##
 # Compiles the user scout
 ##
 def compileScout(logger):
     # 1. Set the target flags
-    setTargetFlags(logger)
+    compiler = setTargetFlags(logger)
 
     # 2. Add additional flags:
-    #  a) Will use the TCP server for instructions
-    #  b) Will use dynamic buffers (malloc) for the received instructions
-    #  c) Will act as a proxy scout, only passing on the instructions to the driver
-    setScoutFlags([flag_instructions, flag_dynamic_buffers, flag_proxy])
+    #  * flag_instructions - Will use the TCP server for instructions
+    #  * flag_dynamic_buffers - Will use dynamic buffers (malloc) for the received instructions
+    #  * flag_proxy - Will act as a proxy scout, only passing on the instructions to the driver
+    compiler.setScoutFlags([flag_instructions, flag_dynamic_buffers, flag_proxy])
 
-    # 3. Define the working directories
-    setWorkingDirs(project_dir='.', scout_dir = SCOUT_DIR)
+    # 3. Add custom compilation flags (not needed)
+    # compiler.addCompilationFlags(compile_flags=[], link_flags=[])
 
-    # 4. Generate the used compilation flags (we will rely on the defaults)
-    compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
-
-    # 5. Generate the list of compiled files
-    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_all_files] + project_files
-
-    # 6. Compile the PC (user mode proxy) scout
+    # 4. Compile the PC (user mode proxy) scout
     logger.info('Starting to compile the user scout')
-    compileExecutableScout(compilation_files, compile_flags, link_flags, USER_SCOUT_BIN, logger)
-
-    # Finished :)
+    compileExecutableScout(scout_all_files, project_files, USER_SCOUT_BIN, logger)
     return
 
 ##

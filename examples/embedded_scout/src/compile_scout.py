@@ -20,9 +20,11 @@ SCOUT_LOADER_BIN    = 'scout_loader.bin'
 EMBEDDED_SCOUT_ELF  = 'embedded_scout.elf'
 EMBEDDED_SCOUT_BIN  = 'embedded_scout.bin'
 
-TARGET_ARCH         = ARC_INTEL
+TARGET_ARCH         = ARC_ARM
+# Is Little Endian
 TARGET_ENDIANNESS   = True if TARGET_ARCH == ARC_INTEL else False
-TARGET_BITNESS      = True # is 32 bits?
+# Is 32 bits?
+TARGET_BITNESS      = True if TARGET_ARCH != ARC_INTEL else False
 
 # Scout Functions (in same order as the c code)
 symbol_memcpy  		= 0x80486c0
@@ -55,50 +57,52 @@ project_files       = ['arm_scout.c', 'project_instructions.c'] + project_pic_fi
 # Sets the basic architecture flags for our target
 ##
 def setTargetFlags(logger):
-    # 1. Set the architecture
-    setScoutArc(TARGET_ARCH, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS, logger=logger)
+    # 0. Create the compiler instance
+    compiler = scoutCompiler(logger)
+    
+    # 1. Set the architecture    
+    compiler.setArc(TARGET_ARCH, is_pic=True, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS)
 
-    # 2. Set the environment
-    setScoutEnv(is_executable=False)
-
-    # 3. Set the permission mode
-    setScoutMode(is_user=False)
+    # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
+    compiler.setScoutMode(is_user=True)
+    
+    # 3. Set the working directories
+    compiler.setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
+    
+    return compiler
 
 ##
 # Compiles the scout loader (TCP Server loader)
 ##
 def compileScoutLoader(logger):
     # 1. Set the target flags
-    setTargetFlags(logger)
+    compiler = setTargetFlags(logger)
 
-    # 2. Additional flags: thumb mode (if in ARM), and mmap (in both cases)
-    setScoutFlags([flag_loader, flag_loader_server, flag_mmap] + ([flag_arc_thumb] if TARGET_ARCH == ARC_ARM else []))
+    # 2. Additional flags:
+    #  * flag_loader - Compiling a loader
+    #  * flag_loader_server - Compiling a TCP server loader
+    #  * flag_mmap - The loader will use mmap() instead of malloc()
+    #  X flag_load_thumb - If will be loading a Thumb code full Scout
+    #  X flag_loader_transmit - If the loader will need to be able to send TCP messages
+    compiler.addScoutFlags([flag_loader, flag_loader_server, flag_mmap])
 
-    # 3. Define the working directories
-    setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
+    # 3. Add custom compilation flags (not needed)
+    # compiler.addCompilationFlags(compile_flags=[], link_flags=[])
 
-    # 4. Generate the used compilation flags (we will rely on the defaults)
-    compile_flags, link_flags=generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
-
-    # 5. Generate the list of compiled files
-    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_loader_deps + [scout_server_loader]] + loader_pic_files
-
-    # 6. Compile an embedded scout
+    # 4. Compile an embedded scout
     logger.info('Starting to compile the scout loader')
-    compilePICScout(compilation_files, compile_flags, link_flags, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN, logger)
+    compiler.compilePICScout(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN)
 
-    # 7. Place the PIC context in the resulting binary file
+    # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
                 symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
                 symbol_mmap, symbol_mprotect, symbol_munmap, project_got=loader_got, is_thumb=TARGET_ARCH == ARC_ARM)
 
-    # 8. Setup the sizes for the global variables (No variables used at all)
+    # 6. Setup the sizes for the global variables (No variables used at all)
     generateGlobals(scout_vars_size=0, project_vars_size=0)
 
-    # 9. Generate the PIC context, and place it in the binary blob
+    # 7. Generate the PIC context, and place it in the binary blob
     placeContext(SCOUT_LOADER_BIN, SCOUT_LOADER_BIN, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
-
-    # 10. Finished :)
     return
 
 ##
@@ -106,38 +110,30 @@ def compileScoutLoader(logger):
 ##
 def compileScout(logger):
     # 1. Set the target flags
-    setTargetFlags(logger)
+    compiler = setTargetFlags(logger)
 
     # 2. Add additional flags:
-    #  a) Will use the TCP server for instructions
-    #  b) Will use dynamic buffers (malloc) for the received instructions
-    setScoutFlags([flag_instructions, flag_dynamic_buffers])
+    #  * flag_instructions - Will use the TCP server for instructions
+    #  * flag_dynamic_buffers - Will use dynamic buffers (malloc) for the received instructions
+    compiler.addScoutFlags([flag_instructions, flag_dynamic_buffers])
 
-    # 3. Define the working directories
-    setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
+    # 3. Add custom compilation flags (not needed)
+    # compiler.addCompilationFlags(compile_flags=[], link_flags=[])
 
-    # 4. Generate the used compilation flags (we will rely on the defaults)
-    compile_flags, link_flags = generateCompilationFlags(compile_flags=[], link_flags=[], logger=logger)
-
-    # 5. Generate the list of compiled files
-    compilation_files = [os.path.join(SCOUT_DIR, f) for f in scout_all_files] + project_files
-
-    # 6. Compile a PIC scout
+    # 4. Compile a PIC scout
     logger.info('Starting to compile the PIC scout')
-    compilePICScout(compilation_files, compile_flags, link_flags, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
+    compiler.compilePICScout(scout_all_files, project_files, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
 
-    # 7. Place the PIC context in the resulting binary file
+    # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
                 symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
                 project_got=project_got)
 
-    # 8. Setup the sizes for the global variables
+    # 6. Setup the sizes for the global variables
     generateGlobals(scout_vars_size=scout_instructions_globals_32_size if TARGET_BITNESS else scout_instructions_globals_64_size, project_vars_size=0)
 
-    # 9. Generate the PIC context, and place it in the binary blob
+    # 7. Generate the PIC context, and place it in the binary blob
     placeContext(EMBEDDED_SCOUT_BIN, EMBEDDED_SCOUT_BIN, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
-
-    # 10. Finished :)
     return
 
 ##
