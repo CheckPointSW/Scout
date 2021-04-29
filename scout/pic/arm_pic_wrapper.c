@@ -18,7 +18,7 @@
 #endif /* ELF_START */
 
 #ifdef SCOUT_ARM_THUMB
-#define STATIC_FUNC_ADDR    (ELF_START + 0x10)  // It sounds wierd, but with +0xC it had an offset of 4 bytes...
+#define STATIC_FUNC_ADDR    (ELF_START + 0x10)  // It sounds weird, but with +0xC it had an offset of 4 bytes...
 #else
 #define STATIC_FUNC_ADDR    (ELF_START + 0x10)
 #endif /* SCOUT_ARM_THUMB */

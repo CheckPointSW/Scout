@@ -63,6 +63,8 @@ When injecting our (PIC) code into a host binary, we should make sure to use the
 * SCOUT_HOST_GLIBC - The used library is Glibc
 * SCOUT_HOST_UCLIBC - The used library is uClibc (or uClibc-NG)
 
+If none are defined the base library will define "SCOUT_HOST_GLIBC" on it's own.
+
 Loader Flags
 ------------
 * SCOUT_LOADER - We are now compiling a loader (that might be using it's own pic plt / globals).
