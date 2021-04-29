@@ -10,12 +10,14 @@ The server is the debugger that is being sent / injected into the debugee, and t
 Folder Structure
 ----------------
 * docs - This documentation
-* embedded_scout - Use case example for an "Embedded Mode" compilation
-* kernel_scout - Use case example for a Linux "Kernel Mode" compilation
-* manager - Client side code, including the use case example for the Linux kernel use case
-* scout - Source code for the debugger (core of the server side)
+* examples
+  * embedded_scout - Use case example for an "Embedded Mode" compilation
+  * kernel_scout - Use case example for a Linux "Kernel Mode" compilation
+* src
+  * scout - Source code for the debugger (core of the server side)
+  * utils - Python compilation scripts and network API for the client/server
 * tests - A simple exploit_me.c for checking PIC compiled binaries
-* utils - Python compilation scripts
+
 
 **Note:** More information on the different compilation modes can be found under the "Compilation Modes" section.
 

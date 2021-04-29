@@ -51,13 +51,14 @@ https://scout-debugger.readthedocs.io/
 * Any Posix-like operating system (Embedded Mode)
 
 ## Folder Structure
-* **docs:** Useful tutorials regarding each unique module of the debugger, including documentation of the API used for custom extensions
-* **embedded_scout:** Example project for an embedded debugger scenario, i.e. a debugger that is injected into the address space of a debuggee firmware
-* **kernel_scout:** Linux kernel driver-based debugger, including a proxy user mode process used for transparent network access
-* **manager:** Python layer for communicating with the debuggee (usually over a TCP connection)
-* **scout:** C code of the basic scout debugger
-* **tests:** A testing utility for PIC based debuggers
-* **utils:** Useful python compilation scripts
+* **docs:** Documentation files that generated the read-the-docs that was linked above
+* **examples:**
+  * embedded_scout - Use case example for an "Embedded Mode" compilation
+  * kernel_scout - Use case example for a Linux "Kernel Mode" compilation
+* **src**
+  * scout - Source code for the debugger (core of the server side)
+  * utils - Python compilation scripts and network API for the client/server
+* **tests:** A simple exploit_me.c for checking PIC compiled binaries
 
 ## Credits
 This projects combines together design and compilation tricks that I learned from many fellow researchers during the years.
