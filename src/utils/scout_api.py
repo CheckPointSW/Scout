@@ -62,6 +62,10 @@ def setBitness64():
 
     TARGET_BITNESS = 64
 
+def isBitness32():
+    """Check if the given bitness configuration is for 32-bits."""
+    return TARGET_BITNESS == 32
+
 def addErrorCodes(errors):
     """Add the given error codes to the supported dictionary.
 

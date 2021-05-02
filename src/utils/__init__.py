@@ -1,6 +1,6 @@
 # Network API / Utils
-import scout_api
-import scout_network
+from .scout_api      import *
+from .scout_network  import sendInstr, remoteLoadServer, remoteLoadClient
 # Compilation Scripts
-import context_creator
-import scout_compiler
+from .scout_compiler import scoutCompiler, ARC_INTEL, ARC_ARM, ARC_ARM_THUMB, ARC_MIPS
+

@@ -1,4 +1,4 @@
-from scout_api import *
+from .scout_api import *
 import struct
 import socket
 

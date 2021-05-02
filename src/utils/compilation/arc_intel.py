@@ -1,4 +1,4 @@
-from target_arc import targetArc
+from .target_arc import targetArc
 
 class arcIntel(targetArc):
     """A class representing an Intel CPU architecture to which we will compile our binary.

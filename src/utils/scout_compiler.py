@@ -107,19 +107,20 @@ class scoutCompiler:
         self.is_pic = is_pic
         self.target_arc = arc_factory[arc](is_pic)
         if is_native:
-            target_arc.config_flags.append(flag_native_compiler)
+            self.config_flags.append(flag_native_compiler)
         else:
-            target_arc.setNotNative()
+            self.target_arc.setNotNative()
 
         # Configure the architecture
-        target_arc.setEndianness(is_little_endian)
-        target_arc.setBitness(is_32_bits)
+        self.target_arc.setEndianness(is_little_endian)
+        self.target_arc.setBitness(is_32_bits)
         self.is_32_bits = is_32_bits
         self.is_little_endian = is_little_endian
 
         # Store the values for the configuration flags
         self.config_flags.append(flag_32_bit        if is_32_bits       else flag_64_bit)
         self.config_flags.append(flag_little_endian if is_little_endian else flag_big_endian)
+        self.config_flags += list(arc_flags[arc])
         if self.is_pic:
             self.config_flags.append(flag_pic_code)
 
@@ -148,7 +149,7 @@ class scoutCompiler:
         else:
             main_folder = scout_dir + os.path.sep + ".."
 
-        self.target_arc.compile_flags += ['I' + x for x in [project_folder, main_folder] + include_dirs]
+        self.target_arc.compile_flags += ['I' + x for x in [self.project_folder, main_folder] + include_dirs]
 
     def addScoutFlags(self, flags):
         """Add the flags regarding the target's specifications.
@@ -176,7 +177,7 @@ class scoutCompiler:
     def generateFlagsFile(self):
         """Generate the architecture's "flags.h" file."""
         # Verify the flags
-        verifyScoutFlags()
+        self.verifyScoutFlags()
 
         # Verify we know where to store this file
         if self.project_folder is None:
@@ -257,7 +258,7 @@ class scoutCompiler:
         """
         self.logger.addIndent()
         # 1. Auto-Generate the flags.h file
-        generateFlagsFile()
+        self.generateFlagsFile()
 
         # 2. Prepare the list of compilation files
         compilation_files = [os.path.join(self.scout_folder, f) for f in scout_files] + project_files
@@ -271,11 +272,11 @@ class scoutCompiler:
 
         if not self.is_pic:
             # 4. Re-organize the linker flags
-            fixed_link_flags = "".join("-Wl," + x for x in link_flags.split("-")[1:])
+            fixed_link_flags = "".join("-Wl,-" + x for x in link_flags.split("-")[1:])
 
             # 5. Compile together all of the file (and that's it)
             self.logger.info(f"Compiling the *.c files, linking them together and creating: {elf_file}")
-            systemLine(f"{target_arc.compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", self.logger)
+            systemLine(f"{self.target_arc.compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", self.logger)
 
             self.logger.removeIndent()
             return None
@@ -290,7 +291,7 @@ class scoutCompiler:
         s_files = []
         for c_file in compilation_files:
             local_out_file = ".".join(c_file.split(".")[:-1]) + ".S"
-            systemLine(f"{target_arc.compiler_path} -S -c {compile_flags} {c_file} -o {local_out_file}", self.logger)
+            systemLine(f"{self.target_arc.compiler_path} -S -c {compile_flags} {c_file} -o {local_out_file}", self.logger)
             s_files.append(local_out_file)
 
         # 5. Work-around GCC's bugs
@@ -312,20 +313,20 @@ class scoutCompiler:
         o_files = []
         for s_file in s_files:
             local_out_file = ".".join(s_file.split(".")[:-1]) + ".o"
-            systemLine(f"{target_arc.compiler_path} -c {compile_flags} {s_file} -o {local_out_file}", self.logger)
+            systemLine(f"{self.target_arc.compiler_path} -c {compile_flags} {s_file} -o {local_out_file}", self.logger)
             o_files.append(local_out_file)
 
         # 7. Link together all of the *.o files
         self.logger.info(f"Linking together all of the files, creating: {elf_file}")
-        systemLine(f"{target_arc.linker_path} {link_flags} {' '.join(o_files)} -o {elf_file}", self.logger)
+        systemLine(f"{self.target_arc.linker_path} {link_flags} {' '.join(o_files)} -o {elf_file}", self.logger)
 
         # 8. Objcopy the content to the actual wanted file
-        if elf_file.split('.')[0].lower() == "elf":
+        if elf_file.split('.')[-1].lower() == "elf":
             binary_file = '.'.join(elf_file.split('.')[:-1] + ['bin'])
         else:
             binary_file = elf_file + ".bin"
         self.logger.info(f"Extracting the final binary to: {binary_file}")
-        systemLine(f"{target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(target_arc.objcopy_flags)} {elf_file} {binary_file}", self.logger)
+        systemLine(f"{self.target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(self.target_arc.objcopy_flags)} {elf_file} {binary_file}", self.logger)
 
         # 9. Place the PIC context inside the file
         placeContext(self.full_got, self.global_vars, binary_file, self.logger)

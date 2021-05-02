@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-from kernel_scout_api    import *
-from scout.scout_network import *
-from elementals          import Prompter, hexDump
+from kernel_scout_api             import *
+from scout_debugger.scout_network import *
+from elementals                   import Prompter, hexDump
 
 import logging
 import struct
@@ -18,15 +18,17 @@ def startManage(sock_fd, logger):
     logger.info('Sending the Leak instruction')
     data = sendInstr(sock_fd, instrLeakAddr(), logger)
 
-    leaked_addr = struct.unpack('<Q', data)[0]
-    logger.info('The leaked kernel address is: 0x%016x', leaked_addr)
+    v_leaked_addr, p_leaked_addr = struct.unpack('<QQ', data)
+    logger.info('The leaked kernel virtual  address is: 0x%016x', v_leaked_addr)
+    logger.info('The leaked kernel physical address is: 0x%016x', p_leaked_addr)
 
     logger.info('Sending the memory read instruction')
-    data = sendInstr(sock_fd, instrMemRead((leaked_addr - 0x1000) & (2 ** 64 - 1 - (0x1000 - 1)), 256), logger)
-    logger.info('The leaked data is:')
-    logger.addIndent()
-    logger.info(hexDump(data))
-    logger.removeIndent()
+    data = sendInstr(sock_fd, instrPhyRead((p_leaked_addr - 0x1000) & (2 ** 64 - 1 - (0x1000 - 1)), 256), logger)
+    if data:
+        logger.info('The leaked data is:')
+        logger.addIndent()
+        logger.info(hexDump(data))
+        logger.removeIndent()
 
 ##
 # Prints the usage instructions (example)

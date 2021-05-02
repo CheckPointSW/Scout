@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
 import os
 import sys
 from elementals import Prompter
 
-from scout.scout_compiler import *
+from scout_debugger.scout_compiler import *
 
 ##############################
 ##  Dynamic Configurations  ##
@@ -23,10 +24,10 @@ project_files       = ['scout_user.c']
 ##
 def setTargetFlags(logger):
     # 0. Create the compiler instance
-    compiler = scoutCompiler(logger, is_pic=False)
+    compiler = scoutCompiler(logger)
 
-    # 1. Set the architecture
-    compiler.setArc(TARGET_ARCH)
+    # 1. Set the architecture (using the native compiler)
+    compiler.setArc(TARGET_ARCH, is_pic=False, is_32_bits=False, is_native=True)
 
     # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
     compiler.setScoutMode(is_user=True)
@@ -47,7 +48,7 @@ def compileScout(logger):
     #  * flag_instructions - Will use the TCP server for instructions
     #  * flag_dynamic_buffers - Will use dynamic buffers (malloc) for the received instructions
     #  * flag_proxy - Will act as a proxy scout, only passing on the instructions to the driver
-    compiler.setScoutFlags([flag_instructions, flag_dynamic_buffers, flag_proxy])
+    compiler.addScoutFlags([flag_instructions, flag_dynamic_buffers, flag_proxy])
 
     # 3. Add custom compilation flags (not needed)
     # compiler.addCompilationFlags(compile_flags=[], link_flags=[])

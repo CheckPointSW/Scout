@@ -1,4 +1,4 @@
-from scout.scout_api import *
+from scout_debugger.scout_api import *
 
 ##############################
 ## Extended API Error Codes ##

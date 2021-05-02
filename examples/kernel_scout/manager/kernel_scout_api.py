@@ -1,4 +1,4 @@
-from scout.scout_api import *
+from scout_debugger.scout_api import *
 
 ##############################
 ## Extended API Error Codes ##
@@ -33,7 +33,7 @@ def instrPhyRead(addr, length):
     Return Value:
         string containing the serialized instruction
     """
-    instr = struct.pack("!QL" if TARGET_BITNESS == 64 else "!LL", addr, length)
+    instr = struct.pack("!LL" if isBitness32() else "!QL", addr, length)
     return addHeader(SCOUT_INST_PHY_READ, instr)
 
 def instrPhyWrite(addr, content):
@@ -46,7 +46,7 @@ def instrPhyWrite(addr, content):
     Return Value:
         string containing the serialized instruction
     """
-    instr = struct.pack("!Q" if TARGET_BITNESS == 64 else "!L", addr) + content
+    instr = struct.pack("!L" if isBitness32() else "!Q", addr) + content
     return addHeader(SCOUT_INST_PHY_READ, instr)
 
 def instrLeakAddr():

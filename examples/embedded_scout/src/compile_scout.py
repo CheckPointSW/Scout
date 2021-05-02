@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
 import os
 import sys
 from elementals import Prompter
 
-from scout.scout_compiler import *
+from scout_debugger.scout_compiler import *
 
 ##############################
 ##  Dynamic Configurations  ##
@@ -109,7 +110,8 @@ def compileScout(logger):
     # 2. Add additional flags:
     #  * flag_instructions - Will use the TCP server for instructions
     #  * flag_dynamic_buffers - Will use dynamic buffers (malloc) for the received instructions
-    compiler.addScoutFlags([flag_instructions, flag_dynamic_buffers])
+    #  * flag_mmap - mmap() will be available to the full scout
+    compiler.addScoutFlags([flag_instructions, flag_dynamic_buffers] + ([flag_mmap] if LOADER_USE_MMAP else []))
 
     # 3. Add custom compilation flags (not needed)
     # compiler.addCompilationFlags(compile_flags=[], link_flags=[])

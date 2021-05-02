@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-from embedded_scout_api  import *
-from scout.scout_network import *
-from elementals          import Prompter, hexDump
+from embedded_scout_api           import *
+from scout_debugger.scout_network import *
+from elementals                   import Prompter, hexDump
 
 import logging
 import struct

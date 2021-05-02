@@ -53,7 +53,7 @@ class targetArc:
         self.compiler_path = compiler_path
         self.linker_path   = linker_path
         self.objcopy_path  = objcopy_path
-        self.objcopy_flags = [] + objcopy_flags
+        self.objcopy_flags = list(objcopy_flags)
 
     def setNotNative(self):
         """Mark the compilation as using a toolchain and not the native compiler."""

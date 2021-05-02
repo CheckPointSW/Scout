@@ -1,7 +1,7 @@
 #ifndef __SCOUT__TCP__CLIENT__LOADER__H__
 #define __SCOUT__TCP__CLIENT__LOADER__H__
 
-#include "loader.h"
+#include "scout/loaders/loader.h"
 
 /***************/
 /**  Defines  **/

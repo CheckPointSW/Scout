@@ -102,7 +102,7 @@ uint32_t full_net_recv(sock_fd sock, uint8_t * buffer, uint32_t length)
     return received;
 }
 
-#if !defined(SCOUT_SLIM_SIZE) || defined(SCOUT_TCP_SEND) */
+#if !defined(SCOUT_SLIM_SIZE) || defined(SCOUT_TCP_SEND)
 uint32_t full_net_send(sock_fd sock, uint8_t * buffer, uint32_t length)
 {
     uint32_t sent = 0;

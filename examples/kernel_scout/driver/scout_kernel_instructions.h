@@ -74,13 +74,15 @@ int instruction_phy_write(void * ctx, uint8_t * instruction, uint32_t length);
  */
 int instruction_leak_addr(void * ctx, uint8_t * instruction, uint32_t length);
 
+#define MAX_IO_REQUEST 256
+
 /* The instruction records */
 #define INSTR_PHY_READ_MIN_SIZE (sizeof(addr_t) + sizeof(uint32_t))
 #define INSTR_PHY_READ_MAX_SIZE (sizeof(addr_t) + sizeof(uint32_t))
 #define INSTR_PHY_READ_HANDLER  instruction_phy_read
 
 #define INSTR_PHY_WRITE_MIN_SIZE (sizeof(addr_t))
-#define INSTR_PHY_WRITE_MAX_SIZE (sizeof(addr_t) + 256)
+#define INSTR_PHY_WRITE_MAX_SIZE (sizeof(addr_t) + MAX_IO_REQUEST)
 #define INSTR_PHY_WRITE_HANDLER  instruction_phy_write
 
 #define INSTR_LEAK_ADDR_MIN_SIZE 0

@@ -1,4 +1,4 @@
-from target_arc import targetArc
+from .target_arc import targetArc
 
 class arcMips(targetArc):
     """A class representing a Mips CPU architecture to which we will compile our binary.

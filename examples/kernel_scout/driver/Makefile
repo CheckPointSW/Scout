@@ -1,8 +1,9 @@
 RM=rm
 SCOUT_SRC=../../../src/scout
+SCOUT_INC=../../../src
 
 obj-m+=scout.o
-EXTRA_CFLAGS := -I$(src) -I$(src)/../.. -Wno-incompatible-pointer-types
+EXTRA_CFLAGS := -I$(src) -I$(src)/$(SCOUT_INC) -Wno-incompatible-pointer-types
 scout-objs := $(SCOUT_SRC)/pack.o $(SCOUT_SRC)/scout_api.o scout_driver.o scout_kernel_instructions.o
 
 # Build rules

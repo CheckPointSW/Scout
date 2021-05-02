@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from setuptools import setup, find_packages
 from codecs     import open
@@ -6,7 +6,7 @@ from codecs     import open
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setup(name='Scout',
+setup(name='scout_debugger',
       version='2.0.0',
       description='Instruction-based research debugger (a poor man\'s debugger)',
       author='Eyal Itkin',
@@ -15,7 +15,8 @@ setup(name='Scout',
       long_description_content_type="text/markdown",
       url='https://github.com/CheckPointSW/Scout',
       license='MIT',
-      packages=find_packages(),
+      packages=['scout_debugger', 'scout_debugger.compilation'],
+      package_dir={'scout_debugger': 'src/utils'},
       install_requires=['elementals'],
       test_requires=['pydocstyle', 'flake8', 'click'],
       classifiers=[

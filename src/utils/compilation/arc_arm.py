@@ -1,4 +1,4 @@
-from target_arc import targetArc
+from .target_arc import targetArc
 
 class arcArm(targetArc):
     """A class representing an Arm CPU architecture to which we will compile our binary.

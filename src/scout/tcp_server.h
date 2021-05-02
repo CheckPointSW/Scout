@@ -20,8 +20,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-typedef int sock_fd;
 #endif /* !SCOUT_ISOLATED_ENV */
+
+typedef int sock_fd;
 
 /***************/
 /**  Structs  **/
