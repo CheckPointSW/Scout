@@ -179,6 +179,9 @@ class scoutCompiler:
         Note:
             If this is a PIC compilation, the final binary file will be named to match the ELF
             file. For example: "project.elf" => "project.bin".
+
+        Return Value:
+            Name of the PIC binary file (in PIC compilations), None otherwise.
         """
         self.logger.addIndent()
         # 1. Auto-Generate the flags.h file
@@ -203,7 +206,7 @@ class scoutCompiler:
             systemLine(f"{target_arc.compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", self.logger)
 
             self.logger.removeIndent()
-            return
+            return None
 
         ###########################
         ## Compiling a PIC Scout ##
@@ -253,3 +256,4 @@ class scoutCompiler:
         systemLine(f"{target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(target_arc.objcopy_flags)} {elf_file} {final_file}", self.logger)
 
         self.logger.removeIndent()
+        return final_file

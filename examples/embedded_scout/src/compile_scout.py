@@ -88,7 +88,7 @@ def compileScoutLoader(logger):
 
     # 4. Compile an embedded scout
     logger.info('Starting to compile the scout loader')
-    compiler.compile(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF)
+    scout_loader_bin = compiler.compile(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF)
 
     # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
@@ -99,7 +99,7 @@ def compileScoutLoader(logger):
     generateGlobals(scout_vars_size=0, project_vars_size=0)
 
     # 7. Generate the PIC context, and place it in the binary blob
-    placeContext(SCOUT_LOADER_BIN, SCOUT_LOADER_BIN, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
+    placeContext(scout_loader_bin, scout_loader_bin, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
     return
 
 ##
@@ -119,7 +119,7 @@ def compileScout(logger):
 
     # 4. Compile a PIC scout
     logger.info('Starting to compile the PIC scout')
-    compiler.compile(scout_all_files, project_files, EMBEDDED_SCOUT_ELF)
+    embedded_scout_bin = compiler.compile(scout_all_files, project_files, EMBEDDED_SCOUT_ELF)
 
     # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
@@ -130,7 +130,7 @@ def compileScout(logger):
     generateGlobals(scout_vars_size=scout_instructions_globals_32_size if TARGET_BITNESS else scout_instructions_globals_64_size, project_vars_size=0)
 
     # 7. Generate the PIC context, and place it in the binary blob
-    placeContext(EMBEDDED_SCOUT_BIN, EMBEDDED_SCOUT_BIN, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
+    placeContext(embedded_scout_bin, embedded_scout_bin, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
     return
 
 ##
