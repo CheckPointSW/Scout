@@ -1,6 +1,4 @@
 import os
-import sys
-import time
 import struct
 
 from .compilation.scout_flags import *
@@ -8,6 +6,7 @@ from .compilation.scout_files import *
 from .compilation.arc_intel   import arcIntel
 from .compilation.arc_arm     import arcArm, arcArmThumb
 from .compilation.arc_mips    import arcMips
+from .context_creator         import *
 
 ###################################
 ##  Architecture Configurations  ##
@@ -57,7 +56,12 @@ class scoutCompiler:
         self.target_arc = None
         self.project_folder = None
         self.scout_folder = None
-        self.config_flags = []        
+        self.config_flags = []
+        self.is_32_bits = True
+        self.is_little_endian = True
+        self.is_pic = False
+        self.full_got = b''
+        self.global_vars = b''
         
     def setArc(self, arc, is_pic, is_32_bits=True, is_little_endian=True, is_native=False):
         """Sets the target's architecture specifications
@@ -74,6 +78,7 @@ class scoutCompiler:
             self.logger.error("Unknown architecture: \"%s\". Supported options are: \"%s\"", arc, ', '.join(arc_factory.keys()))
 
         # Apply the chosen settings
+        self.is_pic = is_pic
         self.target_arc = arc_factory[arc](is_pic)
         if is native:
             target_arc.config_flags.append(flag_native_compiler)
@@ -83,11 +88,13 @@ class scoutCompiler:
         # Configure the architecture
         target_arc.setEndianness(is_little_endian)
         target_arc.setBitness(is_32_bits)
+        self.is_32_bits = is_32_bits
+        self.is_little_endian = is_little_endian
 
         # Store the values for the configuration flags
         self.config_flags.append(flag_32_bit        if is_32_bits       else flag_64_bit)
         self.config_flags.append(flag_little_endian if is_little_endian else flag_big_endian)
-        if is_pic:
+        if self.is_pic:
             self.config_flags.append(flag_pic_code)
 
     def setScoutMode(self, is_user):
@@ -168,6 +175,45 @@ class scoutCompiler:
         # can close the file
         fd.close()
 
+    def populateGOT(self, scout_got, project_got, project_vars_size=0):
+        """Populates the PIC context with the GOT entries, and capacity for global variables.
+
+        Args:
+            scout_got (list): list of (virtual) addresses according to Scout's GOT order
+            project_got (list): list of additional memory addresses for symbols used in the project's GOT
+            projects_vars_size (int, optional): size (in bytes) of the project's global variables (0 by default)
+        """
+        # Sanity Check #1 - PIC Compilation
+        if not self.is_pic:
+            self.logger.error("Can't populate a PIC context (GOT and globals) for a non-PIC compilation!")
+            return
+
+        # Sanity Check #2 - GOT Size
+        expected_size = scout_got_base_size_mmap if flag_mmap in self.config_flags else scout_got_base_size
+        if len(scout_got) != expected_size:
+            self.logger.error(f"Wrong size for Scout's GOT: Expected {expected_size} entries, and got {len(scout_got)}!")
+            return
+
+        format = ("<" if self.is_little_endian else ">") + ("L" if self.is_32_bits else "Q")
+        is_thumb = self.target_arc.name() == ARC_ARM_THUMB
+        self.full_got = b''.join([struct.pack(format, func + (1 if is_thumb else 0)) for func in scout_got + project_got])
+
+        # Calculate the size for the global variables
+        size_globals = project_vars_size
+        # The base loaders don't use global variables, only the full scout
+        if flag_loader not in self.config_flags:
+            if flag_instructions in self.config_flags:
+                if self.is_32_bits:
+                    size_globals += scout_instructions_globals_32_size
+                    if flag_dynamic_buffers not in self.config_flags:
+                        size_globals += scout_static_buffers_32_size
+                else:
+                    size_globals += scout_instructions_globals_64_size
+                    if flag_dynamic_buffers not in self.config_flags:
+                        size_globals += scout_static_buffers_64_size
+        # Now generate the blob
+        self.global_vars = b'\x00' * size_globals
+
     def compile(self, scout_files, project_files, elf_file):
         """Compiles the "Scout" project, according to the PIC setup that was defined earlier.
 
@@ -197,7 +243,7 @@ class scoutCompiler:
         ## Compiling an Executable ##
         #############################
 
-        if flag_pic_code not in self.config_flags:
+        if not self.is_pic:
             # 4. Re-organize the linker flags
             fixed_link_flags = "".join("-Wl," + x for x in link_flags.split("-")[1:])
 
@@ -229,7 +275,7 @@ class scoutCompiler:
             fd.close()
             content = content.replace(".space #", ".space ").replace(".space $", ".space ")
             # Mips: convert the calls to relative (PIC)
-            if self.target_arc.name() == arcMips.name():
+            if self.target_arc.name() == ARC_MIPS:
                 content = content.replace("\tjal\t", "\tbal\t").replace("\tj\t", "\tb\t")
             fd = open(s_file, "w")
             fd.write(content)
@@ -249,11 +295,14 @@ class scoutCompiler:
 
         # 8. Objcopy the content to the actual wanted file
         if elf_file.split('.')[0].lower() == "elf":
-            final_file = '.'.join(elf_file.split('.')[:-1] + ['bin'])
+            binary_file = '.'.join(elf_file.split('.')[:-1] + ['bin'])
         else:
-            final_file = elf_file + ".bin"
-        self.logger.info(f"Extracting the final binary to: {final_file}")
-        systemLine(f"{target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(target_arc.objcopy_flags)} {elf_file} {final_file}", self.logger)
+            binary_file = elf_file + ".bin"
+        self.logger.info(f"Extracting the final binary to: {binary_file}")
+        systemLine(f"{target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(target_arc.objcopy_flags)} {elf_file} {binary_file}", self.logger)
+
+        # 9. Place the PIC context inside the file
+        placeContext(self.full_got, self.global_vars, binary_file, self.logger)
 
         self.logger.removeIndent()
-        return final_file
+        return binary_file

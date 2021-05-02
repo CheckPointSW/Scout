@@ -1,6 +1,6 @@
-# Network API / Utils
-import scout_api
-import scout_network
-# Compilation Scripts
-import context_creator
-import scout_compiler
+from .scout_files import *
+from .scout_flags import *
+from .target_arc  import *
+from .arc_intel   import *
+from .arc_arm     import *
+from .arc_mips    import *

@@ -22,6 +22,8 @@ TARGET_ARCH         = ARC_ARM
 TARGET_ENDIANNESS   = True if TARGET_ARCH == ARC_INTEL else False
 # Is 32 bits?
 TARGET_BITNESS      = True if TARGET_ARCH != ARC_INTEL else False
+# Should the loader use mmap()?
+LOADER_USE_MMAP     = True # False means we will use malloc() for the loader's memory allocation
 
 # Scout Functions (in same order as the c code)
 symbol_memcpy  		= 0x80486c0
@@ -39,6 +41,13 @@ symbol_close   		= 0x80487e0
 symbol_mmap    		= 0x8048740
 symbol_mprotect		= 0x8048680
 symbol_munmap  		= 0x8048790
+# The order of the symbols is fixed and MUST NOT be changed
+scout_base_got = [ symbol_memcpy, symbol_memset, symbol_malloc, symbol_free,
+                   symbol_socket, symbol_bind, symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
+                 ]
+if LOADER_USE_MMAP:
+    scout_base_got += [symbol_mmap, symbol_mprotect, symbol_munmap]
+
 # Loader Functions (none for now)
 loader_got          = []
 # Project Functions (none for now)
@@ -81,25 +90,17 @@ def compileScoutLoader(logger):
     #  * flag_mmap - The loader will use mmap() instead of malloc()
     #  X flag_load_thumb - If will be loading a Thumb code full Scout
     #  X flag_loader_transmit - If the loader will need to be able to send TCP messages
-    compiler.addScoutFlags([flag_loader, flag_loader_server, flag_mmap])
+    compiler.addScoutFlags([flag_loader, flag_loader_server] + ([flag_mmap] if LOADER_USE_MMAP else []))
 
     # 3. Add custom compilation flags (not needed)
     # compiler.addCompilationFlags(compile_flags=[], link_flags=[])
 
-    # 4. Compile an embedded scout
+    # 4. Populate the GOT entries and allcoate the size for the global variables (non used)
+    compiler.populateGOT(scout_base_got, loader_got)
+
+    # 5. Compile an embedded scout (with the PIC context)
     logger.info('Starting to compile the scout loader')
-    scout_loader_bin = compiler.compile(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF)
-
-    # 5. Place the PIC context in the resulting binary file
-    generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
-                symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
-                symbol_mmap, symbol_mprotect, symbol_munmap, project_got=loader_got, is_thumb=TARGET_ARCH == ARC_ARM)
-
-    # 6. Setup the sizes for the global variables (No variables used at all)
-    generateGlobals(scout_vars_size=0, project_vars_size=0)
-
-    # 7. Generate the PIC context, and place it in the binary blob
-    placeContext(scout_loader_bin, scout_loader_bin, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
+    compiler.compile(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF)
     return
 
 ##
@@ -117,20 +118,12 @@ def compileScout(logger):
     # 3. Add custom compilation flags (not needed)
     # compiler.addCompilationFlags(compile_flags=[], link_flags=[])
 
-    # 4. Compile a PIC scout
+    # 4. Populate the GOT entries and allcoate the size for the global variables (non used)
+    compiler.populateGOT(scout_base_got, project_got, project_vars_size=0)
+
+    # 5. Compile a PIC scout (with the PIC context)
     logger.info('Starting to compile the PIC scout')
-    embedded_scout_bin = compiler.compile(scout_all_files, project_files, EMBEDDED_SCOUT_ELF)
-
-    # 5. Place the PIC context in the resulting binary file
-    generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
-                symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
-                project_got=project_got)
-
-    # 6. Setup the sizes for the global variables
-    generateGlobals(scout_vars_size=scout_instructions_globals_32_size if TARGET_BITNESS else scout_instructions_globals_64_size, project_vars_size=0)
-
-    # 7. Generate the PIC context, and place it in the binary blob
-    placeContext(embedded_scout_bin, embedded_scout_bin, TARGET_ENDIANNESS, TARGET_BITNESS, logger)
+    compiler.compile(scout_all_files, project_files, EMBEDDED_SCOUT_ELF)
     return
 
 ##
