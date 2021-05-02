@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import os
 import sys
-import time
-import struct
 from elementals import Prompter
 
 from scout.scout_compiler import *
@@ -26,16 +24,16 @@ project_files       = ['scout_user.c']
 def setTargetFlags(logger):
     # 0. Create the compiler instance
     compiler = scoutCompiler(logger, is_pic=False)
-    
+
     # 1. Set the architecture
     compiler.setArc(TARGET_ARCH)
 
     # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
     compiler.setScoutMode(is_user=True)
-    
+
     # 3. Set the working directories
     compiler.setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
-    
+
     return compiler
 
 ##
@@ -70,7 +68,7 @@ def printUsage(args):
 ##
 # Main function
 ##
-def main(args) :
+def main(args):
     # Check the arguments (None for now)
     if len(args) != 1 + 0:
         print(f'Wrong amount of arguments, got {len(args) - 1}, expected 0')
@@ -83,6 +81,7 @@ def main(args) :
     compileScout(prompter)
 
     prompter.info('Finished Successfully')
+
 
 if __name__ == '__main__':
     main(sys.argv)

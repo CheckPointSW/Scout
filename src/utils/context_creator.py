@@ -34,7 +34,7 @@ scout_got_base_size_mmap = scout_got_base_size + 3
 # * munmap
 
 def placeContext(got, globals, binary_file, logger):
-    """Embedds the PIC context into the compiled binary blob
+    """Embedds the PIC context into the compiled binary blob.
 
     Args:
         got (bytes): Content of the PIC GOT

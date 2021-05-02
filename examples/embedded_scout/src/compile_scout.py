@@ -1,12 +1,9 @@
 #!/usr/bin/python
 import os
 import sys
-import time
-import struct
 from elementals import Prompter
 
-from scout.scout_compiler  import *
-from scout.context_creator import *
+from scout.scout_compiler import *
 
 ##############################
 ##  Dynamic Configurations  ##
@@ -23,28 +20,27 @@ TARGET_ENDIANNESS   = True if TARGET_ARCH == ARC_INTEL else False
 # Is 32 bits?
 TARGET_BITNESS      = True if TARGET_ARCH != ARC_INTEL else False
 # Should the loader use mmap()?
-LOADER_USE_MMAP     = True # False means we will use malloc() for the loader's memory allocation
+LOADER_USE_MMAP     = True  # False means we will use malloc() for the loader's memory allocation
 
 # Scout Functions (in same order as the c code)
-symbol_memcpy  		= 0x80486c0
-symbol_memset  		= 0x8048770
-symbol_malloc  		= 0x80486f0
-symbol_free    		= 0x80486b0
-symbol_socket  		= 0x80487b0
-symbol_bind    		= 0x8048760
-symbol_listen  		= 0x80487a0
-symbol_accept  		= 0x80486e0
-symbol_connect 		= 0x80487c0
-symbol_recv    		= 0x80487d0
-symbol_send    		= 0x80487f0
-symbol_close   		= 0x80487e0
-symbol_mmap    		= 0x8048740
-symbol_mprotect		= 0x8048680
-symbol_munmap  		= 0x8048790
+symbol_memcpy   = 0x80486c0
+symbol_memset   = 0x8048770
+symbol_malloc   = 0x80486f0
+symbol_free     = 0x80486b0
+symbol_socket   = 0x80487b0
+symbol_bind     = 0x8048760
+symbol_listen   = 0x80487a0
+symbol_accept   = 0x80486e0
+symbol_connect  = 0x80487c0
+symbol_recv     = 0x80487d0
+symbol_send     = 0x80487f0
+symbol_close    = 0x80487e0
+symbol_mmap     = 0x8048740
+symbol_mprotect = 0x8048680
+symbol_munmap   = 0x8048790
 # The order of the symbols is fixed and MUST NOT be changed
-scout_base_got = [ symbol_memcpy, symbol_memset, symbol_malloc, symbol_free,
-                   symbol_socket, symbol_bind, symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close,
-                 ]
+scout_base_got  = [symbol_memcpy, symbol_memset, symbol_malloc, symbol_free,
+                   symbol_socket, symbol_bind, symbol_listen, symbol_accept, symbol_connect, symbol_recv, symbol_send, symbol_close]
 if LOADER_USE_MMAP:
     scout_base_got += [symbol_mmap, symbol_mprotect, symbol_munmap]
 
@@ -65,16 +61,16 @@ project_files       = ['arm_scout.c', 'project_instructions.c'] + project_pic_fi
 def setTargetFlags(logger):
     # 0. Create the compiler instance
     compiler = scoutCompiler(logger)
-    
-    # 1. Set the architecture    
+
+    # 1. Set the architecture
     compiler.setArc(TARGET_ARCH, is_pic=True, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS)
 
     # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
     compiler.setScoutMode(is_user=True)
-    
+
     # 3. Set the working directories
     compiler.setWorkingDirs(project_dir='.', scout_dir=SCOUT_DIR)
-    
+
     return compiler
 
 ##
@@ -152,6 +148,7 @@ def main(args):
     compileScout(prompter)
 
     prompter.info('Finished Successfully')
+
 
 if __name__ == '__main__':
     main(sys.argv)

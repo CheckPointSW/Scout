@@ -11,22 +11,22 @@ TARGET_BITNESS = 32
 ###########################
 
 error_codes = {     # General errors
-                     0 : "STATUS_OK",
-                     1 : "STATUS_FAILURE",
-                     2 : "STATUS_INVALID_ARGS",
-                     3 : "STATUS_ALLOC_FAILED",
-                     4 : "STATUS_TCP_SOCK_FAILED",
-                     5 : "STATUS_TCP_BIND_FAILED",
-                     6 : "STATUS_TCP_LISTEN_FAILED",
-                     7 : "STATUS_TCP_ACCEPT_FAILED",
-                     8 : "STATUS_TCP_CONNECT_FAILED",
-                     9 : "STATUS_TCP_RECV_FAILED",
-                    10 : "STATUS_TCP_SEND_FAILED",
+                     0: "STATUS_OK",
+                     1: "STATUS_FAILURE",
+                     2: "STATUS_INVALID_ARGS",
+                     3: "STATUS_ALLOC_FAILED",
+                     4: "STATUS_TCP_SOCK_FAILED",
+                     5: "STATUS_TCP_BIND_FAILED",
+                     6: "STATUS_TCP_LISTEN_FAILED",
+                     7: "STATUS_TCP_ACCEPT_FAILED",
+                     8: "STATUS_TCP_CONNECT_FAILED",
+                     9: "STATUS_TCP_RECV_FAILED",
+                    10: "STATUS_TCP_SEND_FAILED",
 
                     # Scout API
-                    20 : "STATUS_SMALL_HEADER",
-                    21 : "STATUS_ILLEGAL_LENGTH",
-                    22 : "STATUS_ILLEGAL_INSTR_ID"
+                    20: "STATUS_SMALL_HEADER",
+                    21: "STATUS_ILLEGAL_LENGTH",
+                    22: "STATUS_ILLEGAL_INSTR_ID"
               }
 
 ############################
@@ -51,19 +51,19 @@ SCOUT_PORT  = 0x2562
 #######################
 
 def setBitness32():
-    """Sets the module's bitness to match a 32 bit server"""
+    """Set the module's bitness to match a 32 bit server."""
     global TARGET_BITNESS
 
     TARGET_BITNESS = 32
 
 def setBitness64():
-    """Sets the module's bitness to match a 64 bit server"""
+    """Set the module's bitness to match a 64 bit server."""
     global TARGET_BITNESS
 
     TARGET_BITNESS = 64
 
 def addErrorCodes(errors):
-    """Adds the given error codes to the supported dictionary
+    """Add the given error codes to the supported dictionary.
 
     Args:
         errors (dict): new supported error codes in the form: <error ID> : <error string>
@@ -78,47 +78,51 @@ def addErrorCodes(errors):
 #########################
 
 def addHeader(opcode, raw_instr):
-    """Adds the protocol's header to the given instruction
+    """Add the protocol's header to the given instruction.
 
     Args:
-        opcode (numeric): instruction opcode ID
+        opcode (int): instruction opcode ID
         raw_instr (string): binary data of the wanted instruction
+
     Return Value:
         string containing the complete serialized instruction
     """
-    return struct.pack( "!HL", opcode, len( raw_instr )) + raw_instr
+    return struct.pack("!HL", opcode, len(raw_instr)) + raw_instr
 
 # basic instructions
 def instrNop():
-    """Builds the NOP (Pong) instruction
+    """Build the NOP (Ping) instruction.
 
     Args:
         (none)
+
     Return Value:
         string containing the serialized instruction
     """
-    return addHeader( SCOUT_INST_NOP, b'' )
+    return addHeader(SCOUT_INST_NOP, b'')
 
 def instrMemRead(addr, length):
-    """Builds the Read (Virtual) Memory instruction
+    """Build the Read (Virtual) Memory instruction.
 
     Args:
-        addr (numeric): (virtual) memory address
-        length (numeric): number of bytes to be read form the given address
+        addr (int): (virtual) memory address
+        length (int): number of bytes to be read form the given address
+
     Return Value:
         string containing the serialized instruction
     """
-    instr = struct.pack( "!QL" if TARGET_BITNESS == 64 else "!LL", addr, length )
-    return addHeader( SCOUT_INST_MEM_READ, instr )
+    instr = struct.pack("!QL" if TARGET_BITNESS == 64 else "!LL", addr, length)
+    return addHeader(SCOUT_INST_MEM_READ, instr)
 
 def instrMemWrite(addr, content):
-    """Builds the Write (Virtual) Memory instruction
+    """Build the Write (Virtual) Memory instruction.
 
     Args:
-        addr (numeric): (virtual) memory address
+        addr (int): (virtual) memory address
         content (string): binary data to be written to the given address
+
     Return Value:
         string containing the serialized instruction
     """
-    instr = struct.pack( "!Q" if TARGET_BITNESS == 64 else "!L",  addr ) + content
-    return addHeader( SCOUT_INST_MEM_WRITE, instr )
+    instr = struct.pack("!Q" if TARGET_BITNESS == 64 else "!L", addr) + content
+    return addHeader(SCOUT_INST_MEM_WRITE, instr)

@@ -6,7 +6,7 @@ SCOUT_HEADER_FORMAT = "!LL"
 SCOUT_HEADER_SIZE   = struct.Struct(SCOUT_HEADER_FORMAT).size
 
 def sendInstr(sock, instr, logger):
-    """Sends an instruction to the (debuggee) server.
+    """Send an instruction to the (debuggee) server.
 
     Args:
         sock (socket): (TCP) socket to the server
@@ -46,7 +46,7 @@ def sendInstr(sock, instr, logger):
     return data
 
 def remoteLoad(sock, full_scout):
-    """Sends TCP loader the loading instruction for the full scout.
+    """Send the TCP loader the loading instruction for the full scout.
 
     Args:
         sock (socket): (TCP) socket to the remote loader
@@ -55,7 +55,7 @@ def remoteLoad(sock, full_scout):
     sock.send(struct.pack("!L", len(full_scout)) + full_scout)
 
 def remoteLoadServer(ip, full_scout, logger, port=LOADER_PORT):
-    """Connects to the remote TCP loader, and sends the full scout to be loaded.
+    """Connect to the remote TCP loader, and sends the full scout to be loaded.
 
     Args:
         ip (ip address): ip address of the remote scout loader
@@ -71,7 +71,7 @@ def remoteLoadServer(ip, full_scout, logger, port=LOADER_PORT):
     sock.close()
 
 def remoteLoadClient(ip, full_scout, logger, port=LOADER_PORT):
-    """Creates a local TCP server for which the remote loader could connect, and sends it the full scout.
+    """Create a local TCP server for which the remote loader could connect, and sends it the full scout.
 
     Args:
         ip (ip address): ip address for our server

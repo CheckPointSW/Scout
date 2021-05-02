@@ -4,5 +4,4 @@
 
 /* No special functions for now */
 
-
 #endif /* SCOUT_PIC_CODE */

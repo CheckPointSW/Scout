@@ -24,34 +24,60 @@ arc_factory = {
                 ARC_ARM_THUMB: arcArmThumb,
                 ARC_MIPS:      arcMips,
               }
-              
+
 arc_flags = {
                 ARC_INTEL:     (flag_arc_intel,),
                 ARC_ARM:       (flag_arc_arm,),
                 ARC_ARM_THUMB: (flag_arc_arm, flag_arc_thumb),
                 ARC_MIPS:      (flag_arc_mips,),
             }
-            
+
 #################
 ##  Utilities  ##
 #################
-            
-def systemLine(line, logger):
-        """Issues (and debug trace) a systen line
 
-        Args:
-            logger (logger, elementals): logger to be used by the function (elementals)
-            line (string): cmd line to be executed
-        """
-        logger.debug(line)
-        os.system(line)
-        
+def systemLine(line, logger):
+    """Issue (and debug trace) a systen line.
+
+    Args:
+        line (string): cmd line to be executed
+        logger (logger, elementals): logger to be used by the function (elementals)
+    """
+    logger.debug(line)
+    os.system(line)
+
 ###############################
 ##  The full Scout Compiler  ##
 ###############################
 
 class scoutCompiler:
+    """A class representing the Scout Compiler object, which manages the entire compilation logic.
+
+    Attributes
+    ----------
+        logger (logger): (elementals) logger
+        target_arc (targetArc): target architecture instance to hold CPU-specific configurations
+        project_folder (str): path to the user's working folder
+        scout_folder (str): path to Scout's base folder
+        config_flags (list): list of Scout configuration flags, accumulated along the process
+        is_32_bits (bool): True iff we are going to compile a 32-bits binary
+        is_little_endian (bool): True iff we are going to compile a Little Endian binary
+        is_pic (bool): True iff we are going to compile a PIC binary blob
+        full_got (bytes): blob containing the GOT function address table for a PIC compilation
+        global_vars (bytes): blob containing the global variables content for a PIC compilation
+
+    Notes
+    -----
+        This class serves as the main object to be used by the suer when compiling an executable or
+        a Position-Independent-Code (PIC) Scout binary.
+    """
+
     def __init__(self, logger):
+        """Construct the basic Scout compiler object.
+
+        Args:
+            logger (logger): (elementals) logger
+        """
         self.logger = logger
         self.target_arc = None
         self.project_folder = None
@@ -62,9 +88,9 @@ class scoutCompiler:
         self.is_pic = False
         self.full_got = b''
         self.global_vars = b''
-        
+
     def setArc(self, arc, is_pic, is_32_bits=True, is_little_endian=True, is_native=False):
-        """Sets the target's architecture specifications
+        """Set the target's architecture specifications.
 
         Args:
             arc (string, enum): name of the target architecture (should be a key of arc_factory)
@@ -80,11 +106,11 @@ class scoutCompiler:
         # Apply the chosen settings
         self.is_pic = is_pic
         self.target_arc = arc_factory[arc](is_pic)
-        if is native:
+        if is_native:
             target_arc.config_flags.append(flag_native_compiler)
         else:
             target_arc.setNotNative()
-            
+
         # Configure the architecture
         target_arc.setEndianness(is_little_endian)
         target_arc.setBitness(is_32_bits)
@@ -98,7 +124,7 @@ class scoutCompiler:
             self.config_flags.append(flag_pic_code)
 
     def setScoutMode(self, is_user):
-        """Sets the target's permission level
+        """Set the target's permission level.
 
         Args:
             is_user (bool): True iff the scout will run in user mode, otherwise it will assume kernel mode permissions
@@ -106,7 +132,7 @@ class scoutCompiler:
         self.config_flags.append(flag_mode_user if is_user else flag_mode_kernel)
 
     def setWorkingDirs(self, project_dir, scout_dir, include_dirs=[]):
-        """Sets the paths for the used directories
+        """Set the paths for the used directories.
 
         Args:
             project_dir (string): path to the project's directory
@@ -123,32 +149,32 @@ class scoutCompiler:
             main_folder = scout_dir + os.path.sep + ".."
 
         self.target_arc.compile_flags += ['I' + x for x in [project_folder, main_folder] + include_dirs]
-    
+
     def addScoutFlags(self, flags):
-        """Adds the flags regarding the target's specifications
+        """Add the flags regarding the target's specifications.
 
         Args:
             flags (list): list of configuration flags (strings)
         """
         self.config_flags += flags
-    
+
     def addCompilationFlags(self, user_compile_flags=[], user_link_flags=[]):
-        """Add custom compilation / linking flags
+        """Add custom compilation / linking flags.
 
         Args:
             user_compile_flags (list, optional): list of compiler flags (without the '-' prefix)
             user_link_flags (list, optional) list of linker flags (without the '-' prefix)
-        """    
+        """
         self.target_arc.compile_flags += user_compile_flags
         self.target_arc.link_flags    += user_link_flags
 
     def verifyScoutFlags(self):
-        """Checks that all of the configuration flags are set correctly"""
-        if flag_mode_user is not in self.config_flags and flag_mode_kernel is not in self.config_files:
+        """Check that all of the configuration flags are set correctly."""
+        if flag_mode_user not in self.config_flags and flag_mode_kernel not in self.config_files:
             self.logger.warning("Missing Scout flag - unknown permission mode. Defaulting to USER-MODE (low privileges)")
 
     def generateFlagsFile(self):
-        """Generates the architecture's "flags.h" file"""
+        """Generate the architecture's "flags.h" file."""
         # Verify the flags
         verifyScoutFlags()
 
@@ -176,7 +202,7 @@ class scoutCompiler:
         fd.close()
 
     def populateGOT(self, scout_got, project_got, project_vars_size=0):
-        """Populates the PIC context with the GOT entries, and capacity for global variables.
+        """Populate the PIC context with the GOT entries, and capacity for global variables.
 
         Args:
             scout_got (list): list of (virtual) addresses according to Scout's GOT order
@@ -215,7 +241,7 @@ class scoutCompiler:
         self.global_vars = b'\x00' * size_globals
 
     def compile(self, scout_files, project_files, elf_file):
-        """Compiles the "Scout" project, according to the PIC setup that was defined earlier.
+        """Compile the "Scout" project, according to the PIC setup that was defined earlier.
 
         Args:
             scout_files (list): list of file paths for scout's code (*.c) files

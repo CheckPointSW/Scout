@@ -6,9 +6,7 @@ from elementals          import Prompter, hexDump
 
 import logging
 import struct
-import time
 import socket
-import os
 import sys
 
 ##
@@ -63,6 +61,7 @@ def main(args):
     startManage(sock_fd, prompter)
 
     prompter.info('Finished Successfully')
+
 
 if __name__ == '__main__':
     main(sys.argv)
