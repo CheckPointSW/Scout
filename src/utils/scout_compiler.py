@@ -75,7 +75,9 @@ class scoutCompiler:
 
         # Apply the chosen settings
         self.target_arc = arc_factory[arc](is_pic)
-        if not is_native:
+        if is native:
+            target_arc.config_flags.append(flag_native_compiler)
+        else:
             target_arc.setNotNative()
             
         # Configure the architecture

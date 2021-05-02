@@ -8,14 +8,13 @@
  * and it mandates the order of the functions in this file.
  */
 
-/* Compilation on an intel ubuntu machine, with arm-gcc */
-//#define ELF_START           (0x00008000)
+#ifdef SCOUT_NATIVE_COMPILATION
 /* Compilation on a raspberry pi */
-//#define ELF_START           (0x00010074)
-
-#ifndef ELF_START
-    #error "\"ELF_START\" symbol is missing! Should be defined to the address of the \"_start\ function in the ELF."
-#endif /* ELF_START */
+    #define ELF_START           (0x00010074)
+#else /* !SCOUT_NATIVE_COMPILATION */
+/* Compilation on an intel ubuntu machine, with arm-gcc */
+    #define ELF_START           (0x00008000)
+#endif /* SCOUT_NATIVE_COMPILATION */
 
 #ifdef SCOUT_ARM_THUMB
 #define STATIC_FUNC_ADDR    (ELF_START + 0x10)  // It sounds weird, but with +0xC it had an offset of 4 bytes...
