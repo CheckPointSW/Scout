@@ -15,10 +15,7 @@ from scout.context_creator import *
 SCOUT_DIR           = '../../../src/scout'
 
 SCOUT_LOADER_ELF    = 'scout_loader.elf'
-SCOUT_LOADER_BIN    = 'scout_loader.bin'
-
 EMBEDDED_SCOUT_ELF  = 'embedded_scout.elf'
-EMBEDDED_SCOUT_BIN  = 'embedded_scout.bin'
 
 TARGET_ARCH         = ARC_ARM
 # Is Little Endian
@@ -91,7 +88,7 @@ def compileScoutLoader(logger):
 
     # 4. Compile an embedded scout
     logger.info('Starting to compile the scout loader')
-    compiler.compilePICScout(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF, SCOUT_LOADER_BIN)
+    compiler.compile(scout_server_loader_deps, loader_pic_files, SCOUT_LOADER_ELF)
 
     # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,
@@ -122,7 +119,7 @@ def compileScout(logger):
 
     # 4. Compile a PIC scout
     logger.info('Starting to compile the PIC scout')
-    compiler.compilePICScout(scout_all_files, project_files, EMBEDDED_SCOUT_ELF, EMBEDDED_SCOUT_BIN, logger)
+    compiler.compile(scout_all_files, project_files, EMBEDDED_SCOUT_ELF)
 
     # 5. Place the PIC context in the resulting binary file
     generateGOT(symbol_memcpy, symbol_memset, symbol_malloc, symbol_free, symbol_socket, symbol_bind,

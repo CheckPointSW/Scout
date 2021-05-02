@@ -56,7 +56,7 @@ def compileScout(logger):
 
     # 4. Compile the PC (user mode proxy) scout
     logger.info('Starting to compile the user scout')
-    compileExecutableScout(scout_all_files, project_files, USER_SCOUT_BIN, logger)
+    compiler.compile(scout_all_files, project_files, USER_SCOUT_BIN)
     return
 
 ##

@@ -168,30 +168,48 @@ class scoutCompiler:
         # can close the file
         fd.close()
 
-    def compilePICScout(self, scout_files, project_files, elf_file, final_file):
-        """Compiles a Position-Independent (PIC) "Scout" project
+    def compile(self, scout_files, project_files, elf_file):
+        """Compiles the "Scout" project, according to the PIC setup that was defined earlier.
 
         Args:
             scout_files (list): list of file paths for scout's code (*.c) files
             proect_files (list): list of file paths for the project's code (*.c) files
             elf_file (string): path to the (created) compiled ELF file
-            final_file (string): path to the (created) PIC binary file
+
+        Note:
+            If this is a PIC compilation, the final binary file will be named to match the ELF
+            file. For example: "project.elf" => "project.bin".
         """
         self.logger.addIndent()
+        # 1. Auto-Generate the flags.h file
+        generateFlagsFile()
 
-        # 0. Sanity check
+        # 2. Prepare the list of compilation files
+        compilation_files = [os.path.join(self.scout_folder, f) for f in scout_files] + project_files
+
+        # 3. Prepare the compilation & linking flags
+        compile_flags, link_flags = self.target_arc.prepareFlags()
+
+        #############################
+        ## Compiling an Executable ##
+        #############################
+
         if flag_pic_code not in self.config_flags:
-            self.logger.error("Compiling a PIC scout without the PIC-CODE Environment flag. Did you mean: compileExecutableScout() ?")
+            # 4. Re-organize the linker flags
+            fixed_link_flags = "".join("-Wl," + x for x in link_flags.split("-")[1:])
+
+            # 5. Compile together all of the file (and that's it)
+            self.logger.info(f"Compiling the *.c files, linking them together and creating: {elf_file}")
+            systemLine(f"{target_arc.compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", self.logger)
+
             self.logger.removeIndent()
             return
 
-        # 1. Auto-Generate the flags.h file
-        generateFlagsFile()
-        
-        # 2. Prepare the list of compilation files        
-        compilation_files = [os.path.join(self.scout_folder, f) for f in scout_files] + project_files
+        ###########################
+        ## Compiling a PIC Scout ##
+        ###########################
 
-        # 3. Generate all of the *.S files
+        # 4. Generate all of the *.S files
         self.logger.info("Compiling the *.c files")
         compile_flags, link_flags = self.target_arc.prepareFlags()
         s_files = []
@@ -200,7 +218,7 @@ class scoutCompiler:
             systemLine(f"{target_arc.compiler_path} -S -c {compile_flags} {c_file} -o {local_out_file}", self.logger)
             s_files.append(local_out_file)
 
-        # 4. Work-around GCC's bugs
+        # 5. Work-around GCC's bugs
         self.logger.info("Fixing the *.S files to work around GCC's bugs")
         for s_file in s_files:
             fd = open(s_file, "r")
@@ -214,7 +232,7 @@ class scoutCompiler:
             fd.write(content)
             fd.close()
 
-        # 5. Generate all of the *.o files
+        # 6. Generate all of the *.o files
         self.logger.info("Compiling the *.S files")
         o_files = []
         for s_file in s_files:
@@ -222,39 +240,16 @@ class scoutCompiler:
             systemLine(f"{target_arc.compiler_path} -c {compile_flags} {s_file} -o {local_out_file}", self.logger)
             o_files.append(local_out_file)
 
-        # 6. Link together all of the *.o files
+        # 7. Link together all of the *.o files
         self.logger.info(f"Linking together all of the files, creating: {elf_file}")
         systemLine(f"{target_arc.linker_path} {link_flags} {' '.join(o_files)} -o {elf_file}", self.logger)
 
-        # 7. Objcopy the content to the actual wanted file
+        # 8. Objcopy the content to the actual wanted file
+        if elf_file.split('.')[0].lower() == "elf":
+            final_file = '.'.join(elf_file.split('.')[:-1] + ['bin'])
+        else:
+            final_file = elf_file + ".bin"
         self.logger.info(f"Extracting the final binary to: {final_file}")
         systemLine(f"{target_arc.objcopy_path} -O binary -j .text -j .rodata {' '.join(target_arc.objcopy_flags)} {elf_file} {final_file}", self.logger)
 
         self.logger.removeIndent()
-
-    def compileExecutableScout(self, scout_files, project_files, elf_file):
-        """Compiles a regular executable "Scout" project
-
-        Args:
-            scout_files (list): list of file paths for scout's code (*.c) files
-            proect_files (list): list of file paths for the project's code (*.c) files
-            elf_file (string): path to the (created) compiled ELF file
-        """
-        # 0. Sanity check
-        if flag_pic_code in self.config_flags:
-            logger.error("Compiling an Executable scout with PIC-CODE environment flag. Did you mean: compilePICScout() ?")
-            return
-
-        # 1. Auto-Generate the flags.h file
-        generateFlagsFile()
-
-        # 2. Re-organize the linker flags
-        compile_flags, link_flags = self.target_arc.prepareFlags()
-        fixed_link_flags = "".join("-Wl," + x for x in link_flags.split("-")[1:])
-        
-        # 3. Prepare the list of compilation files
-        compilation_files = [os.path.join(self.scout_folder, f) for f in scout_files] + project_files
-
-        # 4. Compile together all of the file (and that's it)
-        self.logger.info(f"Compiling the *.c files, linking them together and creating: {elf_file}")
-        systemLine(f"{target_arc.compiler_path} {compile_flags} {' '.join(compilation_files)} {fixed_link_flags} -o {elf_file}", self.logger)
