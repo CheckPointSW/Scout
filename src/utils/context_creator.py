@@ -13,7 +13,7 @@ scout_instructions_globals_64_size = 8 + 10 * 24
 scout_static_buffers_32_size = 0x1006 + 2 + 0x1000
 scout_static_buffers_64_size = 0x1006 + 2 + 0x1000
 
-scout_got_base_size = 11
+scout_got_base_size = 12
 scout_got_base_size_mmap = scout_got_base_size + 3
 # Scout GOT symbols order:
 # * memcpy
@@ -26,6 +26,7 @@ scout_got_base_size_mmap = scout_got_base_size + 3
 # * accept
 # * connect
 # * recv
+# * send
 # * close
 # If compiled using MMAP, we also have the following:
 # * mmap
