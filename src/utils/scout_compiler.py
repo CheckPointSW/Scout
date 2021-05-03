@@ -202,13 +202,14 @@ class scoutCompiler:
         # can close the file
         fd.close()
 
-    def populateGOT(self, scout_got, project_got, project_vars_size=0):
+    def populateGOT(self, scout_got, project_got, project_vars_size=0, is_host_thumb=False):
         """Populate the PIC context with the GOT entries, and capacity for global variables.
 
         Args:
             scout_got (list): list of (virtual) addresses according to Scout's GOT order
             project_got (list): list of additional memory addresses for symbols used in the project's GOT
             projects_vars_size (int, optional): size (in bytes) of the project's global variables (0 by default)
+            is_host_thumb (bool, optional): True iff the host process is a Thumb binary (False by default)
         """
         # Sanity Check #1 - PIC Compilation
         if not self.is_pic:
@@ -222,8 +223,7 @@ class scoutCompiler:
             return
 
         format = ("<" if self.is_little_endian else ">") + ("L" if self.is_32_bits else "Q")
-        is_thumb = self.target_arc.name() == ARC_ARM_THUMB
-        self.full_got = b''.join([struct.pack(format, func + (1 if is_thumb else 0)) for func in scout_got + project_got])
+        self.full_got = b''.join([struct.pack(format, func + (1 if is_host_thumb else 0)) for func in scout_got + project_got])
 
         # Calculate the size for the global variables
         size_globals = project_vars_size
