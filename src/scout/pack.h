@@ -145,6 +145,8 @@ uint16_t htons(uint16_t value);
  */
 uint32_t htonl(uint32_t value);
 
+#if defined(SCOUT_BITS_64) || !defined(SCOUT_SLIM_SIZE)
+
 /**
  * Converts the given value from host order to network order
  *
@@ -155,6 +157,8 @@ uint32_t htonl(uint32_t value);
  * @return uint64_t - converted value
  */
 uint64_t htonq(uint64_t value);
+
+#endif /* SCOUT_BITS_64 || !SCOUT_SLIM_SIZE */
 
 /**
  * Converts the given value from network order to host order
@@ -178,6 +182,8 @@ uint16_t ntohs(uint16_t value);
  */
 uint32_t ntohl(uint32_t value);
 
+#if defined(SCOUT_BITS_64) || !defined(SCOUT_SLIM_SIZE)
+
 /**
  * Converts the given value from network order to host order
  *
@@ -188,6 +194,8 @@ uint32_t ntohl(uint32_t value);
  * @return uint64_t - converted value
  */
 uint64_t ntohq(uint64_t value);
+
+#endif /* SCOUT_BITS_64 || !SCOUT_SLIM_SIZE */
 
 #endif /* SCOUT_ISOLATED_ENV */
 

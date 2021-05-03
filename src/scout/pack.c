@@ -128,6 +128,8 @@ uint32_t htonl(uint32_t value)
     return value;
 }
 
+#if defined(SCOUT_BITS_64) || !defined(SCOUT_SLIM_SIZE)
+
 uint64_t htonq(uint64_t value)
 {
 #ifdef SCOUT_LITTLE_ENDIAN
@@ -142,6 +144,8 @@ uint64_t htonq(uint64_t value)
 #endif /* SCOUT_LITTLE_ENDIAN */
     return value;
 }
+
+#endif /* SCOUT_BITS_64 || !SCOUT_SLIM_SIZE */
 
 uint16_t ntohs(uint16_t value)
 {
@@ -161,6 +165,8 @@ uint32_t ntohl(uint32_t value)
 #endif /* SCOUT_LITTLE_ENDIAN */
 }
 
+#if defined(SCOUT_BITS_64) || !defined(SCOUT_SLIM_SIZE)
+
 uint64_t ntohq(uint64_t value)
 {
 #ifdef SCOUT_LITTLE_ENDIAN
@@ -169,5 +175,7 @@ uint64_t ntohq(uint64_t value)
     return value;
 #endif /* SCOUT_LITTLE_ENDIAN */
 }
+
+#endif /* SCOUT_BITS_64 || !SCOUT_SLIM_SIZE */
 
 #endif /* SCOUT_ISOLATED_ENV */

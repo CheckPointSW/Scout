@@ -14,10 +14,14 @@
 typedef addr_t size_t;
 typedef size_t off_t;
 
+#ifndef SCOUT_SLIM_SIZE
+
 void *   memcpy(void * dst, const void * src, size_t size);
 void *   memset(void * dst, int value, size_t size);
 void *   malloc(size_t size);
 void     free(void * ptr);
+
+#endif /* SCOUT_SLIM_SIZE */
 
 /***************************/
 /**  Socket Dependencies  **/
@@ -67,6 +71,8 @@ struct sockaddr
 typedef int         sock_fd;
 typedef size_t      socklen_t;
 
+#ifndef SCOUT_SLIM_SIZE
+
 sock_fd socket(int domain, int type, int protocol);
 sock_fd bind(sock_fd socket, const struct sockaddr * address, socklen_t address_len);
 int     listen(sock_fd sockfd, int backlog);
@@ -75,6 +81,8 @@ int     connect(sock_fd sockfd, const struct sockaddr * addr, socklen_t addrlen)
 int     recv(sock_fd sockfd, void * buf, size_t len, int flags);
 int     send(sock_fd sockfd, void * buf, size_t len, int flags);
 void    close(sock_fd fd);
+
+#endif /* SCOUT_SLIM_SIZE */
 
 /*************************/
 /**  MMap Dependencies  **/
@@ -102,9 +110,13 @@ void    close(sock_fd fd);
 
 #endif
 
+#ifndef SCOUT_SLIM_SIZE
+
 void * mmap(void * addr, size_t length, int prot, int flags, int fd, off_t offset);
 int    mprotect(void * addr, size_t len, int prot);
 int    munmap(void * addr, size_t length);
+
+#endif /* SCOUT_SLIM_SIZE */
 
 #endif /* SCOUT_ISOLATED_ENV */
 

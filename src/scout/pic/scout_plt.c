@@ -1,6 +1,6 @@
 #include "scout/pic/pic_wrapper.h"
 
-#ifdef SCOUT_PIC_CODE
+#if defined(SCOUT_PIC_CODE) && !defined(SCOUT_SLIM_SIZE)
 
 /* LibC */
 void * memcpy(void * dst, const void * src, size_t size)
@@ -83,4 +83,4 @@ int munmap(void * addr, size_t length)
 
 #endif /* SCOUT_MMAP */
 
-#endif /* SCOUT_PIC_CODE */
+#endif /* SCOUT_PIC_CODE && !SCOUT_SLIM_SIZE */
