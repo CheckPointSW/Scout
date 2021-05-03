@@ -24,46 +24,30 @@ addr_t get_pc()
 pic_context_t * get_context()
 {
 #ifdef SCOUT_BITS_32
-    asm("push   %ebx                 ");
-    asm("push   %ecx                 ");
-    asm("lea    CONTEXT_LABEL, %ebx  ");
-    asm("call   get_pc               ");
-    asm("MEASURE_LABEL1:             ");
-    asm("lea    MEASURE_LABEL1, %ecx ");
-    asm("sub    %ecx, %ebx           ");
-    asm("add    %ebx, %eax           ");
-    asm("pop    %ecx                 ");
-    asm("pop    %ebx                 ");
+    asm("lea    CONTEXT_LABEL, %eax  ");
+    asm("call   get_live_address     ");
 #else  /* SCOUT_BITS_64 */
-    /* Function pointers are stored in a PIC fashion by default in 64 bits */
-    asm("movq   %0, %%rax            " : : "r" ((addr_t)address));
+    asm("lea    CONTEXT_LABEL, %rdi  ");
+    asm("call   get_live_address     ");
 #endif /* SCOUT_BITS_32 */
 }
 
 void * get_live_address(const void * address)
 {
 #ifdef SCOUT_BITS_32
-    asm("push   %ebx                 ");
-    asm("push   %ecx                 ");
-    asm("movl   %0, %%ebx            " : : "r" ((addr_t)address));
+    asm("movl   %0, %%edx            " : : "r" ((addr_t)address));
     asm("call   get_pc               ");
-    asm("MEASURE_LABEL2:             ");
-    asm("lea    MEASURE_LABEL2, %ecx ");
-    asm("sub    %ecx, %ebx           ");
-    asm("add    %ebx, %eax           ");
-    asm("pop    %ecx                 ");
-    asm("pop    %ebx                 ");
+    asm("MEASURE_LABEL1:             ");
+    asm("lea    MEASURE_LABEL1, %ecx ");
+    asm("sub    %ecx, %edx           ");
+    asm("add    %edx, %eax           ");
 #else  /* SCOUT_BITS_64 */
-    asm("push   %rbx                 ");
-    asm("push   %rcx                 ");
-    asm("movq   %0, %%rbx            " : : "r" ((addr_t)address));
+    asm("movq   %0, %%rdx            " : : "r" ((addr_t)address));
     asm("call   get_pc               ");
-    asm("MEASURE_LABEL2:             ");
-    asm("lea    MEASURE_LABEL2, %rcx ");
-    asm("sub    %rcx, %rbx           ");
-    asm("add    %rbx, %rax           ");
-    asm("pop    %rcx                 ");
-    asm("pop    %rbx                 ");
+    asm("MEASURE_LABEL1:             ");
+    asm("lea    MEASURE_LABEL1, %rcx ");
+    asm("sub    %rcx, %rdx           ");
+    asm("add    %rdx, %rax           ");
 #endif /* SCOUT_BITS_32 */
 }
 

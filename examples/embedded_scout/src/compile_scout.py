@@ -64,7 +64,7 @@ def setTargetFlags(logger):
     compiler = scoutCompiler(logger)
 
     # 1. Set the architecture
-    compiler.setArc(TARGET_ARCH, is_pic=True, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS)
+    compiler.setArc(TARGET_ARCH, is_pic=True, is_32_bits=TARGET_BITNESS, is_little_endian=TARGET_ENDIANNESS, is_native=TARGET_ARCH == ARC_INTEL)
 
     # 2. Set the permission mode (User & low CPU permissions, Kernel & High CPU permissions)
     compiler.setScoutMode(is_user=True)

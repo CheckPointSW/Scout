@@ -295,17 +295,31 @@ class scoutCompiler:
             s_files.append(local_out_file)
 
         # 5. Work-around GCC's bugs
+        # We can afford these changes due to the following:
+        # a) We only perform them on PIC compilations
+        # b) PIC compilations don't contain string literals, so we won't conflict with them
+        # c) Our strings are very specific, so they (probably) won't conflict with something else
         self.logger.info("Fixing the *.S files to work around GCC's bugs")
         for s_file in s_files:
             fd = open(s_file, "r")
-            content = fd.read()
+            content_lines = fd.readlines()
             fd.close()
-            content = content.replace(".space #", ".space ").replace(".space $", ".space ")
-            # Mips: convert the calls to relative (PIC)
-            if self.target_arc.name() == ARC_MIPS:
-                content = content.replace("\tjal\t", "\tbal\t").replace("\tj\t", "\tb\t")
+
+            new_content_lines = []
+            for content in content_lines:
+                # Makes sure that only our special "_start" will be at the beginning of the compiled blob
+                # This is needed because gcc tends to place "Main" in .text.startup section, instead of our _start.
+                if ".section	.text.startup" in content and "Scout" not in content:
+                    continue
+                content = content.replace(".space #", ".space ").replace(".space $", ".space ")
+                # Mips: convert the calls to relative (PIC)
+                if self.target_arc.name() == ARC_MIPS:
+                    content = content.replace("\tjal\t", "\tbal\t").replace("\tj\t", "\tb\t")
+                # save the modified line
+                new_content_lines.append(content)
+
             fd = open(s_file, "w")
-            fd.write(content)
+            fd.writelines(new_content_lines)
             fd.close()
 
         # 6. Generate all of the *.o files

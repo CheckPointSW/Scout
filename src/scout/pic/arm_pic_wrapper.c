@@ -22,6 +22,8 @@
 #define STATIC_FUNC_ADDR    (ELF_START + 0x10)
 #endif /* SCOUT_ARM_THUMB */
 
+asm(".section	.text.startup,\"ax\",%progbits ;#Scout comment");
+
 void _start()
 {
     main();

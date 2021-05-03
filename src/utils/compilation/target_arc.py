@@ -20,7 +20,7 @@ class targetArc:
     native_objcopy_path  = 'objcopy'
     native_objcopy_flags = ()
 
-    base_compile_flags            = ('fno-builtin', 'Wno-int-to-pointer-cast', 'Wno-pointer-to-int-cast')
+    base_compile_flags            = ('fno-builtin', 'Wno-int-to-pointer-cast', 'Wno-pointer-to-int-cast', 'fno-pic')
     base_executable_compile_flags = ('O2',)
     base_pic_compile_flags        = ('Os', 'nostdlib', 'fno-toplevel-reorder')
     base_link_flags               = ()
