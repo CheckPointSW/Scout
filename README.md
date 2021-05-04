@@ -53,12 +53,16 @@ https://scout-debugger.readthedocs.io/
 ## Folder Structure
 * **docs:** Documentation files that generated the read-the-docs that was linked above
 * **examples:**
-  * embedded_scout - Use case example for an "Embedded Mode" compilation
-  * kernel_scout - Use case example for a Linux "Kernel Mode" compilation
+  * **embedded_scout** - Use case example for an "Embedded Mode" compilation
+  * **kernel_scout** - Use case example for a Linux "Kernel Mode" compilation
 * **src**
-  * scout - Source code for the debugger (core of the server side)
-  * utils - Python compilation scripts and network API for the client/server
+  * **scout** - Source code for the debugger (core of the server side)
+  * **utils** - Python compilation scripts and network API for the client/server
 * **tests:** A simple exploit_me.c for checking PIC compiled binaries
+
+## Installation
+* Installing the python package: ```python3 setup.py install```
+* Dedicated compilers: A list of compilers per-architecture is found on ```compilers.txt```
 
 ## Credits
 This projects combines together design and compilation tricks that I learned from many fellow researchers during the years.

@@ -11,6 +11,9 @@ Scout is a configurable debugger, that could be deployed in several different en
 To decide what will be the suitable compilation mode / architecture flags, one should check the following parameters.
 Each of the defined parameters is a C MACRO (define) that controls the behavior (and compilation) of the resulting binary.
 
+**Important Note:**
+When using ``scoutCompiler``, it will automatically generate most of the needed flags by deducing the right values based on the architecture and configuration flags that are supplied to it. Please see the ``embedded_scout`` example for more info.
+
 Target Endianness
 -----------------
 * SCOUT_BIG_ENDIAN - Scout is executed on a Big Endian architecture
@@ -37,7 +40,7 @@ Only one of above flags can be defined.
 If none are defined the base library will define "SCOUT_ARCH_INTEL" on it's own.
 
 **Additional Flags:**
-* SCOUT_ARM_THUMB - Scout will be executed on an ARM cpu in Thumb mode. Can only be used together with the "SCOUT_ARCH_ARM" flag.
+SCOUT_ARM_THUMB - Scout will be executed on an ARM cpu in Thumb mode. Can only be used together with the "SCOUT_ARCH_ARM" flag.
 
 The flags are needed only in PIC mode, in which we use inline assembly.
 
@@ -50,6 +53,8 @@ Only one of above flags can be defined.
 If none are defined the base library will define "SCOUT_MODE_USER" on it's own.
 
 "SCOUT_MODE_KERNEL" will also be the right choice for an RTOS (Real-time OS) in which every task / our task has high privileges. The flag will lead to the definition of "SCOUT_HIGH_PRIVILEGES" by the compilation environment.
+
+**Important Note:** As flushing the CPU cache usually requires high privileges, the per-architecture implementation will only be available if compiling using the "SCOUT_MODE_KERNEL" flag.
 
 Position Independent Mode - SCOUT_PIC_CODE
 ------------------------------------------
@@ -69,9 +74,9 @@ Loader Flags
 ------------
 * SCOUT_LOADER - We are now compiling a loader (that might be using it's own pic plt / globals).
 * SCOUT_LOADING_THUMB_CODE - The loader will load a Scout that was compiled to be executed on an ARM cpu in Thumb mode.
-* SCOUT_RESTORE_FLOW - The default loaders (```tcp_client_server.c```, ```tcp_loader_server.c```) will clean-up after themselves if the loaded scout will finish the endless loop.
+* SCOUT_RESTORE_FLOW - The default loaders (``tcp_client_server.c``, ``tcp_loader_server.c``) will clean-up after themselves if the loaded scout will finish the endless loop.
 
-If the loader will be compiled to be Position Independent (PIC), which is probably the most common use case, it will also define a new flag of "SCOUT_SLIM_SIZE", to help shrink the size of the binary (to serve as an effective shellcode.
+If the loader will be compiled to be Position Independent (PIC), which is probably the most common use case, it will also define a new flag of "SCOUT_SLIM_SIZE", to help shrink the size of the binary (to serve as an effective shellcode).
 Under this definition the TCP server would expect the following flags (if needed):
 * SCOUT_TCP_CLIENT - There is a need to include the feature of a TCP client
 * SCOUT_TCP_SERVER - There is a need to include the feature of a TCP server
@@ -80,6 +85,6 @@ Under this definition the TCP server would expect the following flags (if needed
 Additional Flags:
 -----------------
 * SCOUT_INSTRUCTIONS - Scout is going to use the instructions api (using the TCP server for instance)
-* SCOUT_DYNAMIC_BUFFERS - Scout will dynamically ```malloc()``` buffers to be used by the tcp server. Otherwise static buffers will be used.
+* SCOUT_DYNAMIC_BUFFERS - Scout will dynamically ``malloc()`` buffers to be used by the tcp server. Otherwise static buffers will be used.
 * SCOUT_PROXY - Scout is going to act as a proxy (user scout passing instructions to a kernel driver for instance)
-* SCOUT_MMAP - Should scout's loaders use ```mmap()``` and ```mprotect()``` when loading (if defined) or should they simply use ```malloc()``` (if undefined)
+* SCOUT_MMAP - Should scout's loaders use ``mmap()`` and ``mprotect()`` when loading (if defined) or should they simply use ``malloc()`` (if undefined)
