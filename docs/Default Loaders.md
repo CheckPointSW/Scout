@@ -8,8 +8,8 @@ To overcome these limitations, the scout debugger comes with a list of supported
 
 The defualt loaders are:
 
-1. ```tcp_client_loader.c``` - Connects to a predefined TCP server
-2. ```tcp_server_loader.c``` - Waits for an incoming TCP client
+1. ``tcp_client_loader.c`` - Connects to a predefined TCP server
+2. ``tcp_server_loader.c`` - Waits for an incoming TCP client
 
 Both of the loaders use the same network protocol:
 
@@ -18,13 +18,13 @@ Both of the loaders use the same network protocol:
 
 After a TCP connection was established, the loader will follow these steps:
 
-1. The loader will receive the header and malloc() a memory buffer of appropriate size.
+1. The loader will receive the header and ``malloc()``/``mmap()`` a memory buffer of appropriate size.
 2. The data will be received and stored in this memory buffer.
-3. The loader will flush the D-cache and I-cache of the buffer (only in architectures were this is needed)
-4. The loader will mprotect() the memory to use the correct permissions (only in architectures were this is needed)
+3. The loader will flush the D-cache and I-cache of the buffer (only in architectures were this is needed, and only if we have high enough CPU privileges for it)
+4. The loader will ``mprotect()`` the memory to use the correct permissions (only in architectures were this is needed)
 5. The loader will jump into the buffer's start (offset 0, as mentioned in the "PIC Compilation" section)
-6. In the flow restore case, once the loaded executable finishes the loader will free the memory and close the used sockets.
+6. In the flow restore case, once the loaded executable finishes, the loader will free the memory and close the used sockets.
 
-The functions ```remoteLoadServer()``` and ```remoteLoadClient()``` in ```scout_network.py```, implement the required protocol for communicating with the loader, and loading up the full Scout.
+The functions ``remoteLoadServer()`` and ``remoteLoadClient()`` in ``scout_network.py``, implement the required protocol for communicating with the loader, and loading up the full Scout. A working example is shown under the ``manager.py`` of the ``embedded_scout`` example.
 
 **Note:** In case there are any W^X style limitations in your environment, it is recommended to make sure that the allocated memory for the full debugger will have both Write and eXcutable permissions (should probably use the SCOUT_MMAP flag in this case).

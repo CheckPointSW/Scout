@@ -1,5 +1,0 @@
-List Of Misc Dependencies:
-==========================
-1. Python pip package "elementals" ==> pip install elementals
-2. GCC compilation to 32 bits on 64 bits linux machines ==> sudo apt-get install gcc-multilib libc6-dev-i386
-3. ARM cross compiler toolchain for linux ==> sudo apt-get install gcc-arm-none-eabi

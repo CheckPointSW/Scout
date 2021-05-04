@@ -1,40 +1,48 @@
 # Compiled scout
-scout/*.o
-scout/*.S
-scout/*.bin
-scout/*.elf
-scout/arc/*.o
-scout/arc/*.S
-scout/loaders/*.o
-scout/loaders/*.S
-scout/pic/*.o
-scout/pic/*.S
+src/scout/*.o
+src/scout/*.S
+src/scout/*.bin
+src/scout/*.elf
+src/scout/arc/*.o
+src/scout/arc/*.S
+src/scout/loaders/*.o
+src/scout/loaders/*.S
+src/scout/pic/*.o
+src/scout/pic/*.S
+src/scout/Scout.vpj
+src/scout/Scout.vpw
+src/scout/Scout.vpwhist
+src/scout/Scout.vtg
 
 # Compiled embedded scout
-embedded_scout/*.o
-embedded_scout/*.S
-embedded_scout/*.bin
-embedded_scout/*.elf
+examples/embedded_scout/*.o
+examples/embedded_scout/*.S
+examples/embedded_scout/*.bin
+examples/embedded_scout/*.elf
 
-# Compiled kernel scoutkernel_scout/driver/*.order
-kernel_scout/driver/*.symvers
-kernel_scout/driver/*.o
-kernel_scout/driver/*.ko
-kernel_scout/user_mode/*.o
-kernel_scout/user_mode/*.S
-kernel_scout/user_mode/*.bin
-kernel_scout/user_mode/*.elf
+# Compiled kernel scoutexamples/kernel_scout/driver/*.order
+examples/kernel_scout/driver/*.symvers
+examples/kernel_scout/driver/*.o
+examples/kernel_scout/driver/*.ko
+examples/kernel_scout/user_mode/*.o
+examples/kernel_scout/user_mode/*.S
+examples/kernel_scout/user_mode/*.bin
+examples/kernel_scout/user_mode/*.elf
 
 # Compiled tests
 tests/exploit_me_32
 tests/exploit_me_64
 
 # Compiled python modules
-utils/*.pyc
-manager/*.pyc
+src/utils/*.pyc
 
 # Generated docs
 docs/_build/*
 docs/_build/*/*
 docs/_build/*/*/*
 docs/_build/*/*/*/*
+
+# Python package
+build/
+dist/
+scout_debugger.*
