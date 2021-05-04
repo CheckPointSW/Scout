@@ -41,3 +41,8 @@ docs/_build/*
 docs/_build/*/*
 docs/_build/*/*/*
 docs/_build/*/*/*/*
+
+# Python package
+build/
+dist/
+scout_debugger.*
