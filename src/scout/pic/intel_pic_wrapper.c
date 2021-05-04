@@ -25,7 +25,9 @@ pic_context_t * get_context()
 {
 #ifdef SCOUT_BITS_32
     asm("lea    CONTEXT_LABEL, %eax  ");
+    asm("push   %eax                 ");
     asm("call   get_live_address     ");
+    asm("pop    %edx                 ");
 #else  /* SCOUT_BITS_64 */
     asm("lea    CONTEXT_LABEL, %rdi  ");
     asm("call   get_live_address     ");

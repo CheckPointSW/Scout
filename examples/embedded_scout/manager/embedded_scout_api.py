@@ -42,4 +42,4 @@ def instrFree(address):
     Return Value:
         string containing the serialized instruction
     """
-    return addHeader(EMBEDDED_INST_FREE, struct.pack("!L", address))
+    return addHeader(EMBEDDED_INST_FREE, struct.pack("!L" if isBitness32() else "!Q", address))

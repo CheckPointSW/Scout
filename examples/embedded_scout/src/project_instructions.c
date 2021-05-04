@@ -32,7 +32,7 @@ int32_t instruction_free(void * ctx, uint8_t * instruction, uint32_t length)
     uint8_t * readHead = instruction;
     uint32_t addr;
 
-    addr = unpack_uint32( &readHead );
+    addr = unpack_addr( &readHead );
 	/* Sanity check (example for a project-specific status code) */
 	if(addr == NULL)
 	{
