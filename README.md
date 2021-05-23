@@ -75,9 +75,11 @@ Scout was developed and used in our following research projects:
 * [Check Point Research - Would you like some RCE with your Guacamole?](https://research.checkpoint.com/2020/apache-guacamole-rce/)
 * [Check Point Research - Linux Kernel MMap vulnerabilities](https://research.checkpoint.com/mmap-vulnerabilities-linux-kernel)
 
-## Contact (Updated)
-Scout was developed by me, Eyal Itkin, during my years at Check Point Research. The debugger was a useful tool that helped during numerous research projects (as listed above), and I aim on keeping maintaining and developing it in the future.
+## Personal Note
+Scout was developed during my years at Check Point Research and proved itself useful by significantly helping us during numerous research projects (as listed above).
 
-As so, the repository was forked under my personal Github account, and the new fork will serve as the official repository from now on. The official repository can be found here: https://github.com/eyalitki/Scout
+Being a useful tool, I aim on keeping maintaining and developing it in the future. Being unable to maintain it under this original repository, the repository was forked under my personal Github account, and the new fork will serve as the maintained repository from now on.
+
+The maintained repository can be found here: https://github.com/eyalitki/Scout
 
 [@EyalItkin](https://twitter.com/EyalItkin)

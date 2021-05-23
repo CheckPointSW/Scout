@@ -97,7 +97,7 @@ This projects combines together design and compilation tricks that I learned fro
 
 Links
 -----
-* Old repository - https://github.com/CheckPointSW/Scout
+* Original   repository - https://github.com/CheckPointSW/Scout
 * Maintained repository - https://github.com/eyalitki/Scout
 
 Scout was used in our following research projects:
