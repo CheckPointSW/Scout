@@ -97,7 +97,8 @@ This projects combines together design and compilation tricks that I learned fro
 
 Links
 -----
-* https://github.com/CheckPointSW/Scout
+* Original   repository - https://github.com/CheckPointSW/Scout
+* Maintained repository - https://github.com/eyalitki/Scout
 
 Scout was used in our following research projects:
 
@@ -110,4 +111,3 @@ Scout was used in our following research projects:
 Contact
 -------
 * `@EyalItkin <https://twitter.com/EyalItkin>`_ 
-* eyalit at checkpoint dot com
